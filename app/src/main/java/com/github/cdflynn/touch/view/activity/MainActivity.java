@@ -3,6 +3,8 @@ package com.github.cdflynn.touch.view.activity;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,14 +16,31 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.github.cdflynn.touch.R;
+import com.github.cdflynn.touch.view.control.MotionEventLogView;
+import com.github.cdflynn.touch.view.control.NoisyMotionEventView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private class Views {
+
+        NoisyMotionEventView touchTarget;
+        MotionEventLogView log;
+
+        Views(MainActivity root) {
+            touchTarget = (NoisyMotionEventView) root.findViewById(R.id.touch_target);
+            log = (MotionEventLogView) root.findViewById(R.id.log);
+        }
+    }
+
+    private Views mViews;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mViews = new Views(this);
+        mViews.touchTarget.setMotionEventListener(mTouchTargetListener);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -45,27 +64,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+    private final NoisyMotionEventView.MotionEventListener mTouchTargetListener = new NoisyMotionEventView.MotionEventListener() {
+        @Override
+        public void onMotionEvent(MotionEvent e) {
+            mViews.log.log(e);
         }
-
-        return super.onOptionsItemSelected(item);
-    }
+    };
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override

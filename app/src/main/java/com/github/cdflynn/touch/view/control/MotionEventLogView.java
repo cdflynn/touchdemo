@@ -1,7 +1,7 @@
 package com.github.cdflynn.touch.view.control;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
@@ -18,20 +18,37 @@ import java.util.List;
 
 public class MotionEventLogView extends LinearLayout {
 
-    private static final int CAPACITY = 6;
+    private static final int CAPACITY = 12;
+
+    private static final class LoggedEvent {
+
+        LoggedEvent(MotionEvent e) {
+            this.action = e.getAction();
+            this.rawX = e.getRawX();
+            this.rawY = e.getRawY();
+        }
+
+        void overwrite(int action, float rawX, float rawY) {
+            this.action = action;
+            this.rawX = rawX;
+            this.rawY = rawY;
+        }
+
+        int action;
+        float rawX;
+        float rawY;
+    }
 
     static class Views {
-        TextView newLine;
         TextView history;
 
         Views(View root) {
-            newLine = (TextView) root.findViewById(R.id.motion_event_log_new_line);
             history = (TextView) root.findViewById(R.id.motion_event_log_history);
         }
     }
 
     private Views mViews;
-    private List<MotionEvent> mEventLog;
+    private List<LoggedEvent> mEventLog;
 
     public MotionEventLogView(Context context) {
         super(context);
@@ -64,9 +81,9 @@ public class MotionEventLogView extends LinearLayout {
         if (event == null) {
             return;
         }
-        mEventLog.add(0, event);
+        addOrUpdate(event);
         trim();
-        showEvents(mEventLog);
+        showHistory();
     }
 
     private void trim() {
@@ -75,39 +92,58 @@ public class MotionEventLogView extends LinearLayout {
         }
     }
 
-    private void showEvents(List<MotionEvent> events) {
-        if (events.isEmpty()) {
+    private void addOrUpdate(MotionEvent e) {
+        if (mEventLog.isEmpty()) {
+            mEventLog.add(0, new LoggedEvent(e));
             return;
         }
-        mViews.newLine.setText(from(events.get(0)));
-        if (events.size() > 1) {
-            SpannableStringBuilder history = new SpannableStringBuilder();
-            for (int i = 1; 1 < events.size(); i++) {
-                history.append(from(events.get(i)));
-                if (i != (events.size()+1)) {
-                    history.append('\n');
-                }
-            }
-            mViews.history.setText(history.toString());
+
+        if (e.getAction() == mEventLog.get(0).action) {
+            mEventLog.get(0).overwrite(e.getAction(), e.getRawX(), e.getRawY());
+        } else {
+            mEventLog.add(0, new LoggedEvent(e));
         }
+
     }
 
-    private SpannableString from(MotionEvent e) {
-        SpannableString s = new SpannableString(MotionEvent.actionToString(e.getAction()));
+    private void showHistory() {
+        if (mEventLog.isEmpty()) {
+            return;
+        }
+        SpannableStringBuilder history = new SpannableStringBuilder();
+        for (int i = (mEventLog.size() -1); i >= 0; i--) {
+            history.append(from(mEventLog.get(i)));
+            if (i != 0) {
+                history.append('\n');
+            }
+        }
+        mViews.history.setText(history);
+    }
+
+    private SpannableString from(LoggedEvent e) {
+        SpannableString s = new SpannableString(MotionEvent.actionToString(e.action) + rawLocation(e));
         int color = textColorFrom(e);
         s.setSpan(new ForegroundColorSpan(color), 0, s.length(), 0);
         return s;
     }
 
-    private int textColorFrom(MotionEvent e) {
-        switch (e.getAction()) {
+    private String rawLocation(LoggedEvent e) {
+        if (e == null) {
+            return "";
+        }
+        return " (" + e.rawX + ", " + e.rawY + ")";
+    }
+
+    private int textColorFrom(LoggedEvent e) {
+        switch (e.action) {
             case MotionEvent.ACTION_DOWN:
+                return ContextCompat.getColor(getContext(), R.color.textColorPrimary);
             case MotionEvent.ACTION_UP:
-                return Color.GREEN;
             case MotionEvent.ACTION_CANCEL:
-                return Color.RED;
+                return ContextCompat.getColor(getContext(), R.color.textColorAccentError);
+            case MotionEvent.ACTION_MOVE:
             default:
-                return Color.WHITE;
+                return ContextCompat.getColor(getContext(), R.color.textColorAccent);
         }
     }
 }

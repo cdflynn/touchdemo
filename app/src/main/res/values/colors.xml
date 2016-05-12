@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#376e6b</color>
+    <color name="colorPrimaryDark">#2a5654</color>
+    <color name="colorAccent">#4e8da4</color>
+    <color name="textColorPrimary">#454545</color>
+    <color name="textColorAccent">#6476b4</color>
+    <color name="textColorAccentError">#9b794f</color>
+    <color name="selection_mask">#8bdae0fc</color>
+    <color name="selection_ripple">#a5c5ccf5</color>
+    <color name="activity_background">#e6e5e5</color>
+
 
     <color name="shadow">#c9383838</color>
 </resources>

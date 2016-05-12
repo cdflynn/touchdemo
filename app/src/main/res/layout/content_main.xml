@@ -1,13 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/activity_background"
+    android:padding="30dp"
+    android:clipToPadding="false"
     tools:context=".view.activity.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
     <com.github.cdflynn.touch.view.control.MotionEventLogView
+        android:id="@+id/log"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-</RelativeLayout>
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:padding="6dp"/>
+
+    <com.github.cdflynn.touch.view.control.NoisyMotionEventView
+        android:id="@+id/touch_target"
+        android:layout_width="match_parent"
+        android:layout_height="393dp"
+        android:background="@drawable/white_item_ripple"
+        android:clickable="true"
+        android:elevation="3dp"
+        android:outlineProvider="bounds"/>
+
+
+</FrameLayout>

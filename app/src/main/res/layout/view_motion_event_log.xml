@@ -13,11 +13,4 @@
         android:gravity="bottom"
         tools:text="DOWN\nMOVE\nMOVE"/>
 
-    <TextView
-        android:id="@+id/motion_event_log_new_line"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:text="UP"
-        />
-
 </LinearLayout>
