@@ -1,4 +1,4 @@
-package com.github.cdflynn.touch.view.control;
+package com.github.cdflynn.touch.view.view;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;

@@ -8,23 +8,22 @@
     android:padding="30dp"
     android:clipToPadding="false"
     tools:context=".view.activity.MainActivity"
-    tools:showIn="@layout/app_bar_main">
+    tools:showIn="@layout/activity_main">
 
-    <com.github.cdflynn.touch.view.control.MotionEventLogView
+    <com.github.cdflynn.touch.view.view.MotionEventLogView
         android:id="@+id/log"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="bottom"
         android:padding="6dp"/>
 
-    <com.github.cdflynn.touch.view.control.NoisyMotionEventView
+    <com.github.cdflynn.touch.view.view.NoisyMotionEventView
         android:id="@+id/touch_target"
         android:layout_width="match_parent"
         android:layout_height="393dp"
         android:background="@drawable/white_item_ripple"
         android:clickable="true"
-        android:elevation="3dp"
+        android:elevation="@dimen/elevation"
         android:outlineProvider="bounds"/>
-
 
 </FrameLayout>
