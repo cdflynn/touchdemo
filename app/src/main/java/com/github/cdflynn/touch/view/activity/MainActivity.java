@@ -44,17 +44,21 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         BaseFragment currentFragment = (BaseFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame);
         if (currentFragment != null) {
-            String currentFragmentTag = currentFragment.getClass().getSimpleName();
+            String currentFragmentTag = currentFragment.getTag();
             switch(item.getItemId()) {
                 case R.id.action_noisy:
                     if (!currentFragmentTag.equals(NoisyFragment.class.getSimpleName())) {
                         navigateTo(NoisyFragment.newInstance());
                         return true;
+                    } else {
+                        break;
                     }
                 case R.id.action_touch_slop:
                     if (!currentFragmentTag.equals(TouchSlopFragment.class.getSimpleName())) {
                         navigateTo(TouchSlopFragment.newInstance());
                         return true;
+                    } else {
+                        break;
                     }
             }
         }
@@ -64,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     private void showFragment(BaseFragment fragment) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.content_frame, fragment, fragment.getClass().getSimpleName());
+        ft.setCustomAnimations(0, R.anim.shrink, R.anim.grow, 0);
         ft.commit();
     }
 

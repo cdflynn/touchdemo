@@ -20,7 +20,8 @@
     <com.github.cdflynn.touch.view.view.NoisyMotionEventView
         android:id="@+id/touch_target"
         android:layout_width="match_parent"
-        android:layout_height="393dp"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="100dp"
         android:background="@drawable/white_item_ripple"
         android:clickable="true"
         android:elevation="@dimen/elevation"

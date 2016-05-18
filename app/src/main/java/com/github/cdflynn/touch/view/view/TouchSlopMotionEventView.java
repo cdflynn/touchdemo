@@ -1,11 +1,17 @@
 package com.github.cdflynn.touch.view.view;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.support.annotation.IntRange;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
+import com.github.cdflynn.touch.R;
 import com.github.cdflynn.touch.processing.OnTouchElevator;
 import com.github.cdflynn.touch.view.interfaces.MotionEventListener;
 import com.github.cdflynn.touch.view.interfaces.MotionEventStream;
@@ -16,25 +22,28 @@ import com.github.cdflynn.touch.view.interfaces.MotionEventStream;
  */
 public class TouchSlopMotionEventView extends View implements MotionEventStream {
 
-
     /**
      * Container for holding relevant details about any in-progress motion events.
      */
-    private static class MotionEventState {
-        float xDown = -1f;
-        float yDown = -1f;
+    private static class TouchState {
+        static final float NONE = -1f;
+        float xDown = NONE;
+        float yDown = NONE;
 
         public void reset() {
-            xDown = -1;
-            yDown = -1;
+            xDown = NONE;
+            yDown = NONE;
         }
     }
 
+    private float mLastDownX = TouchState.NONE;
+    private float mLastDownY = TouchState.NONE;
     private MotionEventListener mListener;
     private OnTouchElevator mOnTouchElevator;
-    private MotionEventState mState;
+    private TouchState mState;
+    private Paint mPaint;
     private int mScaledTouchSlop;
-
+    private int mAdditionalTouchSlop;
 
     public TouchSlopMotionEventView(Context context) {
         super(context);
@@ -58,7 +67,8 @@ public class TouchSlopMotionEventView extends View implements MotionEventStream 
 
     private void init(Context context) {
         mOnTouchElevator = new OnTouchElevator();
-        mState = new MotionEventState();
+        mState = new TouchState();
+        mPaint = createPaint();
         mScaledTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
     }
 
@@ -84,11 +94,14 @@ public class TouchSlopMotionEventView extends View implements MotionEventStream 
             case MotionEvent.ACTION_DOWN:
                 mState.xDown = event.getRawX();
                 mState.yDown = event.getRawY();
+                mLastDownX = event.getX();
+                mLastDownY = event.getY();
                 mListener.onMotionEvent(event);
                 break;
             case MotionEvent.ACTION_MOVE:
-                final float distance = distance(mState.xDown, mState.yDown, event.getRawX(), event.getRawX());
-                if (distance > mScaledTouchSlop) {
+                final float distance = distance(mState.xDown, mState.yDown, event.getRawX(), event.getRawY());
+                final float slop = mScaledTouchSlop + mAdditionalTouchSlop;
+                if (distance > slop) {
                     mListener.onMotionEvent(event);
                 }
                 break;
@@ -96,9 +109,39 @@ public class TouchSlopMotionEventView extends View implements MotionEventStream 
         return super.onTouchEvent(event);
     }
 
+    /**
+     * For demonstration purposes, add some extra padding to the {@link ViewConfiguration#getScaledTouchSlop()}
+     */
+    public void setAdditionalTouchSlop(@IntRange(from = 0, to = 100) int additionalSlop) {
+        if (additionalSlop < 0) {
+            mAdditionalTouchSlop = 0;
+        } else if (additionalSlop > 100) {
+            mAdditionalTouchSlop = 100;
+        } else {
+            mAdditionalTouchSlop = additionalSlop;
+        }
+        invalidate();
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        if (mLastDownX != TouchState.NONE && mLastDownY != TouchState.NONE) {
+            canvas.drawCircle(mLastDownX, mLastDownY, (mScaledTouchSlop + mAdditionalTouchSlop),mPaint);
+        }
+    }
+
     private static float distance(float xDown, float yDown, float xCurrent, float yCurrent) {
-        final float yAbs = Math.abs(yDown - yCurrent);
         final float xAbs = Math.abs(xDown - xCurrent);
+        final float yAbs = Math.abs(yDown - yCurrent);
         return (float)Math.sqrt((yAbs*yAbs) + (xAbs * xAbs));
+    }
+
+    private Paint createPaint() {
+        Paint p = new Paint();
+        p.setStyle(Paint.Style.STROKE);
+        p.setColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+        p.setStrokeWidth(3f);
+        return p;
     }
 }
