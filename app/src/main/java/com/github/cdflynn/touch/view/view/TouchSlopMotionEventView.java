@@ -50,8 +50,13 @@ public class TouchSlopMotionEventView extends View implements MotionEventStream 
     private TouchState mState;
     private Paint mPaint;
     private Path mPath;
+    private Path mPathMirror;
     private int mScaledTouchSlop;
     private int mAdditionalTouchSlop;
+    private float mControlPointX;
+    private float mControlPointY;
+    private float mControlPointXMirror;
+    private float mControlPointYMirror;
 
     public TouchSlopMotionEventView(Context context) {
         super(context);
@@ -78,6 +83,7 @@ public class TouchSlopMotionEventView extends View implements MotionEventStream 
         mState = new TouchState();
         mPaint = createPaint();
         mPath = new Path();
+        mPathMirror = new Path();
         mScaledTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
     }
 
@@ -142,9 +148,18 @@ public class TouchSlopMotionEventView extends View implements MotionEventStream 
         if (mLastDownX != TouchState.NONE && mLastDownY != TouchState.NONE) {
             canvas.drawCircle(mLastDownX, mLastDownY, (mScaledTouchSlop + mAdditionalTouchSlop),mPaint);
         }
+        canvas.drawCircle(mControlPointX, mControlPointY, 10f, mPaint);
+        canvas.drawCircle(mControlPointXMirror, mControlPointYMirror, 10f, mPaint);
+
         canvas.save();
         canvas.rotate(angle(mState), mState.xCurrent, mState.yCurrent);
         canvas.drawPath(mPath, mPaint);
+        canvas.restore();
+
+        canvas.save();
+        canvas.rotate((float)(angle(mState) - 2*Math.toDegrees(Math.asin((mScaledTouchSlop + mAdditionalTouchSlop)/mState.distance))),
+                mState.xCurrent, mState.yCurrent);
+        canvas.drawPath(mPathMirror, mPaint);
         canvas.restore();
     }
 
@@ -159,12 +174,12 @@ public class TouchSlopMotionEventView extends View implements MotionEventStream 
         p.setStyle(Paint.Style.STROKE);
         p.setColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
         p.setStrokeJoin(Paint.Join.ROUND);
+        p.setAntiAlias(true);
         p.setStrokeWidth(3f);
         return p;
     }
 
     // d = Math.sqrt(distance(down, current)^2 - totalSlop^2)
-
     // new x = d * d/distance(down, current)
     // new y = d * r/distance(down, current)
 
@@ -185,13 +200,40 @@ public class TouchSlopMotionEventView extends View implements MotionEventStream 
         return (float) Math.toDegrees(Math.atan2(s.yDown - s.yCurrent, s.xDown - s.xCurrent));
     }
 
+    private float controlPointX(TouchState s) {
+        return s.xCurrent/5 + s.xCurrent;
+    }
+
+    private float controlPointY(TouchState s) {
+        return s.yCurrent * .98f;
+    }
+
+    private float controlPointXInverse(TouchState s) {
+        return s.xCurrent * .8f;
+    }
+
+    private float controlPointYInverse(TouchState s) {
+        return s.yCurrent * 0.98f;
+    }
+
     private void calculatePath() {
         mPath.reset();
+        mPathMirror.reset();
         if (mState.yCurrent == TouchState.NONE || mState.xCurrent == TouchState.NONE || mState.distance == TouchState.NONE) {
             return;
         }
         mPath.moveTo(mState.xCurrent, mState.yCurrent);
-        mPath.lineTo(mState.xCurrent + x(mState),
-                mState.yCurrent + y(mState));
+        mControlPointX = controlPointX(mState);
+        mControlPointY = controlPointY(mState);
+        final float xMod = x(mState);
+        final float yMod = y(mState);
+        mPath.quadTo(mControlPointX, mControlPointY, mState.xCurrent + xMod,
+                mState.yCurrent + yMod);
+
+        mControlPointXMirror = controlPointXInverse(mState);
+        mControlPointYMirror = controlPointYInverse(mState);
+        mPathMirror.moveTo(mState.xCurrent, mState.yCurrent);
+        mPathMirror.quadTo(mControlPointXMirror, mControlPointYMirror, mState.xCurrent + xMod,
+                mState.yCurrent + yMod);
     }
 }
