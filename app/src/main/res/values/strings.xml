@@ -6,5 +6,6 @@
 
     <string name="action_noisy">Noisy</string>
     <string name="action_touch_slop">Touch Slop</string>
+    <string name="action_bezier">Bezier</string>
 
 </resources>

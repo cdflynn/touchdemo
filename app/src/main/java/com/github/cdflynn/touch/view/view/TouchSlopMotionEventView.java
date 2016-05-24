@@ -3,7 +3,6 @@ package com.github.cdflynn.touch.view.view;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.support.annotation.IntRange;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
@@ -29,16 +28,10 @@ public class TouchSlopMotionEventView extends View implements MotionEventStream 
         static final float NONE = -1f;
         float xDown = NONE;
         float yDown = NONE;
-        float xCurrent = NONE;
-        float yCurrent = NONE;
-        float distance = NONE;
 
         public void reset() {
             xDown = NONE;
             yDown = NONE;
-            xCurrent = NONE;
-            yCurrent = NONE;
-            distance = NONE;
         }
     }
 
@@ -48,7 +41,6 @@ public class TouchSlopMotionEventView extends View implements MotionEventStream 
     private OnTouchElevator mOnTouchElevator;
     private TouchState mState;
     private Paint mPaint;
-    private Path mPath;
     private int mScaledTouchSlop;
     private int mAdditionalTouchSlop;
 
@@ -76,7 +68,6 @@ public class TouchSlopMotionEventView extends View implements MotionEventStream 
         mOnTouchElevator = new OnTouchElevator();
         mState = new TouchState();
         mPaint = createPaint();
-        mPath = new Path();
         mScaledTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
     }
 
@@ -100,24 +91,20 @@ public class TouchSlopMotionEventView extends View implements MotionEventStream 
                 mListener.onMotionEvent(event);
                 break;
             case MotionEvent.ACTION_DOWN:
-                mState.xDown = event.getX();
-                mState.yDown = event.getY();
+                mState.xDown = event.getRawX();
+                mState.yDown = event.getRawY();
                 mLastDownX = event.getX();
                 mLastDownY = event.getY();
                 mListener.onMotionEvent(event);
                 break;
             case MotionEvent.ACTION_MOVE:
-                mState.xCurrent = event.getX();
-                mState.yCurrent = event.getY();
-                mState.distance = distance(mState.xDown, mState.yDown, mState.xCurrent, mState.yCurrent);
+                final float distance = distance(mState.xDown, mState.yDown, event.getRawX(), event.getRawY());
                 final float slop = mScaledTouchSlop + mAdditionalTouchSlop;
-                if (mState.distance > slop) {
+                if (distance > slop) {
                     mListener.onMotionEvent(event);
                 }
                 break;
         }
-        calculatePath();
-        invalidate();
         return super.onTouchEvent(event);
     }
 
@@ -141,16 +128,6 @@ public class TouchSlopMotionEventView extends View implements MotionEventStream 
         if (mLastDownX != TouchState.NONE && mLastDownY != TouchState.NONE) {
             canvas.drawCircle(mLastDownX, mLastDownY, (mScaledTouchSlop + mAdditionalTouchSlop),mPaint);
         }
-        canvas.save();
-        canvas.rotate(angle(mState), mState.xCurrent, mState.yCurrent);
-        canvas.drawPath(mPath, mPaint);
-        canvas.restore();
-
-        canvas.save();
-        canvas.rotate((float)(angle(mState) - 2*Math.toDegrees(Math.asin((mScaledTouchSlop + mAdditionalTouchSlop)/mState.distance))),
-                mState.xCurrent, mState.yCurrent);
-        canvas.drawPath(mPath, mPaint);
-        canvas.restore();
     }
 
     private static float distance(float xDown, float yDown, float xCurrent, float yCurrent) {
@@ -163,41 +140,7 @@ public class TouchSlopMotionEventView extends View implements MotionEventStream 
         Paint p = new Paint();
         p.setStyle(Paint.Style.STROKE);
         p.setColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
-        p.setStrokeJoin(Paint.Join.ROUND);
-        p.setAntiAlias(true);
         p.setStrokeWidth(3f);
         return p;
-    }
-
-    // d = Math.sqrt(distance(down, current)^2 - totalSlop^2)
-    // new x = d * d/distance(down, current)
-    // new y = d * r/distance(down, current)
-
-    private float x(TouchState s) {
-        final int totalSlop = mScaledTouchSlop + mAdditionalTouchSlop;
-        final float currToTan = (float)Math.sqrt((s.distance * s.distance) - (totalSlop * totalSlop));
-        return currToTan * (currToTan/s.distance);
-    }
-
-    private float y(TouchState s) {
-        final int totalSlop = mScaledTouchSlop + mAdditionalTouchSlop;
-        final float dwnToCurrent = distance(s.xDown, s.yDown, s.xCurrent, s.yCurrent);
-        final float currToTan = (float)Math.sqrt((s.distance * s.distance) - (totalSlop * totalSlop));
-        return  currToTan * (totalSlop/dwnToCurrent);
-    }
-
-    private float angle(TouchState s) {
-        return (float) Math.toDegrees(Math.atan2(s.yDown - s.yCurrent, s.xDown - s.xCurrent));
-    }
-
-    private void calculatePath() {
-        mPath.reset();
-        if (mState.yCurrent == TouchState.NONE || mState.xCurrent == TouchState.NONE || mState.distance == TouchState.NONE) {
-            return;
-        }
-        mPath.moveTo(mState.xCurrent, mState.yCurrent);
-        final float xMod = x(mState);
-        final float yMod = y(mState);
-        mPath.lineTo(mState.xCurrent + xMod, mState.yCurrent + yMod);
     }
 }

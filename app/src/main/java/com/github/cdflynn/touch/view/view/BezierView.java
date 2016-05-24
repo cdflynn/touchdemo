@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.support.annotation.IntRange;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -18,6 +17,7 @@ import com.github.cdflynn.touch.view.interfaces.MotionEventStream;
 
 public class BezierView extends View implements MotionEventStream {
 
+    private static final int ADD_RADIUS = 100;
     /**
      * Container for holding relevant details about any in-progress motion events.
      */
@@ -47,12 +47,6 @@ public class BezierView extends View implements MotionEventStream {
     private Path mPath;
     private Path mPathMirror;
     private int mScaledTouchSlop;
-    private int mAdditionalTouchSlop = 100;
-    private int mTensionDivisor = 8;
-    private float mControlPointX;
-    private float mControlPointY;
-    private float mControlPointXMirror;
-    private float mControlPointYMirror;
 
     public BezierView(Context context) {
         super(context);
@@ -80,7 +74,7 @@ public class BezierView extends View implements MotionEventStream {
         mPaint = createPaint();
         mPath = new Path();
         mPathMirror = new Path();
-        mScaledTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+        mScaledTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop() + ADD_RADIUS;
     }
 
     @Override
@@ -113,8 +107,7 @@ public class BezierView extends View implements MotionEventStream {
                 mState.xCurrent = event.getX();
                 mState.yCurrent = event.getY();
                 mState.distance = distance(mState.xDown, mState.yDown, mState.xCurrent, mState.yCurrent);
-                final float slop = mScaledTouchSlop + mAdditionalTouchSlop;
-                if (mState.distance > slop) {
+                if (mState.distance > mScaledTouchSlop) {
                     mListener.onMotionEvent(event);
                 }
                 break;
@@ -124,39 +117,24 @@ public class BezierView extends View implements MotionEventStream {
         return super.onTouchEvent(event);
     }
 
-    /**
-     * For demonstration purposes, add some extra padding to the {@link ViewConfiguration#getScaledTouchSlop()}
-     */
-    public void setAdditionalTouchSlop(@IntRange(from = 0, to = 100) int additionalSlop) {
-//        if (additionalSlop < 0) {
-//            mTensionDivisor = 1;
-//        } else if (additionalSlop > 100) {
-//            mTensionDivisor = 100;
-//        } else {
-//            mTensionDivisor = additionalSlop;
-//        }
-        mTensionDivisor = rangeToTensionDivisor(additionalSlop);
-        invalidate();
-    }
-
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (mLastDownX != TouchState.NONE && mLastDownY != TouchState.NONE) {
-            canvas.drawCircle(mLastDownX, mLastDownY, (mScaledTouchSlop + mAdditionalTouchSlop),mPaint);
+            canvas.drawCircle(mLastDownX, mLastDownY, mScaledTouchSlop,mPaint);
         }
 
         final float angle = angle(mState);
+        final float sweep = sweep(mState);
         canvas.save();
-        canvas.rotate(angle, mState.xCurrent, mState.yCurrent);
+        canvas.rotate((angle - sweep),
+                mState.xCurrent, mState.yCurrent);
         canvas.drawPath(mPath, mPaint);
         canvas.restore();
 
         canvas.save();
-        canvas.rotate((float)(angle - 2*Math.toDegrees(Math.asin((mScaledTouchSlop + mAdditionalTouchSlop)/mState.distance))),
+        canvas.rotate((angle + sweep),
                 mState.xCurrent, mState.yCurrent);
-        canvas.save();
-
         canvas.drawPath(mPathMirror, mPaint);
         canvas.restore();
     }
@@ -177,24 +155,28 @@ public class BezierView extends View implements MotionEventStream {
         return p;
     }
 
-    // d = Math.sqrt(distance(down, current)^2 - totalSlop^2)
-    // new x = d * d/distance(down, current)
-    // new y = d * r/distance(down, current)
-
     private float x(TouchState s) {
-        final int totalSlop = mScaledTouchSlop + mAdditionalTouchSlop;
-        final float currToTan = (float)Math.sqrt((s.distance * s.distance) - (totalSlop * totalSlop));
+        final float currToTan = (float)Math.sqrt((s.distance * s.distance) - (mScaledTouchSlop * mScaledTouchSlop));
         return currToTan * (currToTan/s.distance);
     }
 
     private float y(TouchState s) {
-        final int totalSlop = mScaledTouchSlop + mAdditionalTouchSlop;
-        final float currToTan = (float)Math.sqrt((s.distance * s.distance) - (totalSlop * totalSlop));
-        return  currToTan * (totalSlop/s.distance);
+        final float currToTan = (float)Math.sqrt((s.distance * s.distance) - (mScaledTouchSlop * mScaledTouchSlop));
+        return  currToTan * (mScaledTouchSlop/s.distance);
     }
 
+    /**
+     * Major angle between the current touch coordinates and the down coordinates
+     */
     private float angle(TouchState s) {
         return (float) Math.toDegrees(Math.atan2(s.yDown - s.yCurrent, s.xDown - s.xCurrent));
+    }
+
+    /**
+     * Minor angle between the down event and the tangent point
+     */
+    private float sweep(TouchState s) {
+        return (float) Math.toDegrees(Math.asin(mScaledTouchSlop/s.distance));
     }
 
     private void calculatePath() {
@@ -206,28 +188,15 @@ public class BezierView extends View implements MotionEventStream {
         mPath.moveTo(mState.xCurrent, mState.yCurrent);
         final float xMod = x(mState);
         final float yMod = y(mState);
-        mControlPointX = mState.xCurrent + mState.distance/mTensionDivisor;
-        mControlPointY = mState.yCurrent - mState.distance/mTensionDivisor;
-        mPath.quadTo(mControlPointX, mControlPointY, mState.xCurrent + xMod, mState.yCurrent + yMod);
-        mPath.addCircle(mControlPointX, mControlPointY, 10f, Path.Direction.CCW);
+        final float controlPointX = mState.xCurrent + mState.distance * .66f;
+        final float controlPointY = mState.yCurrent + yMod/3;
+        mPath.quadTo(controlPointX, controlPointY, mState.xCurrent + xMod, mState.yCurrent);
+        mPath.addCircle(controlPointX, controlPointY, 10f, Path.Direction.CW);
 
-
-        mControlPointXMirror = mState.xCurrent + mState.distance/mTensionDivisor;
-        mControlPointYMirror = mState.yCurrent + mState.distance/mTensionDivisor;
+        final float controlPointXMirror = mState.xCurrent + mState.distance * .66f;
+        final float controlPointYMirror = mState.yCurrent - yMod/3;
         mPathMirror.moveTo(mState.xCurrent, mState.yCurrent);
-        mPathMirror.quadTo(mControlPointXMirror, mControlPointYMirror, mState.xCurrent + xMod, mState.yCurrent + yMod);
-        mPath.addCircle(mControlPointXMirror, mControlPointYMirror, 10f, Path.Direction.CCW);
-    }
-
-    private int rangeToTensionDivisor(int input) {
-        // 0 - 100 -> 8 - 50
-        if (input < 1) {
-            return 8;
-        }
-        if (input > 100) {
-            return 50;
-        }
-        float inputPercent = input/100f;
-        return (int)(42*inputPercent + 8);
+        mPathMirror.quadTo(controlPointXMirror, controlPointYMirror, mState.xCurrent + xMod, mState.yCurrent);
+        mPathMirror.addCircle(controlPointXMirror, controlPointYMirror, 10f, Path.Direction.CW);
     }
 }

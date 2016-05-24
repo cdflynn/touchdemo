@@ -16,6 +16,7 @@ import android.widget.FrameLayout;
 
 import com.github.cdflynn.touch.R;
 import com.github.cdflynn.touch.view.fragment.BaseFragment;
+import com.github.cdflynn.touch.view.fragment.BezierFragment;
 import com.github.cdflynn.touch.view.fragment.NoisyFragment;
 import com.github.cdflynn.touch.view.fragment.TouchSlopFragment;
 import com.github.cdflynn.touch.view.view.MotionEventLogView;
@@ -50,16 +51,20 @@ public class MainActivity extends AppCompatActivity {
                     if (!currentFragmentTag.equals(NoisyFragment.class.getSimpleName())) {
                         navigateTo(NoisyFragment.newInstance());
                         return true;
-                    } else {
-                        break;
                     }
+                    break;
                 case R.id.action_touch_slop:
                     if (!currentFragmentTag.equals(TouchSlopFragment.class.getSimpleName())) {
                         navigateTo(TouchSlopFragment.newInstance());
                         return true;
-                    } else {
-                        break;
                     }
+                    break;
+                case R.id.action_bezier:
+                    if (!currentFragmentTag.equals(BezierFragment.class.getSimpleName())) {
+                        navigateTo(BezierFragment.newInstance());
+                        return true;
+                    }
+                    break;
             }
         }
         return super.onOptionsItemSelected(item);
@@ -68,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
     private void showFragment(BaseFragment fragment) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.content_frame, fragment, fragment.getClass().getSimpleName());
-        ft.setCustomAnimations(0, R.anim.shrink, R.anim.grow, 0);
         ft.commit();
     }
 
@@ -80,12 +84,11 @@ public class MainActivity extends AppCompatActivity {
         String tag = fragment.getClass().getSimpleName();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.setCustomAnimations(R.anim.slide_in_right,
-                R.anim.shrink,
-                R.anim.grow,
+                0,
+                0,
                 R.anim.slide_out_right);
         ft.remove(currentFragment)
                 .replace(R.id.content_frame, fragment, tag)
-                .addToBackStack(tag)
                 .commit();
         getSupportFragmentManager().executePendingTransactions();
 

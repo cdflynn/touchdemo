@@ -16,6 +16,8 @@ import com.github.cdflynn.touch.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+
 public class MotionEventLogView extends LinearLayout {
 
     private static final int CAPACITY = 12;
@@ -39,11 +41,12 @@ public class MotionEventLogView extends LinearLayout {
         float rawY;
     }
 
-    static class Views {
+    static class Views extends BaseViews {
+        @Bind(R.id.motion_event_log_history)
         TextView history;
 
         Views(View root) {
-            history = (TextView) root.findViewById(R.id.motion_event_log_history);
+            super(root);
         }
     }
 

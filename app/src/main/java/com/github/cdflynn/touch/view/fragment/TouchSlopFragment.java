@@ -19,12 +19,12 @@ public class TouchSlopFragment extends BaseFragment {
 
 
     private class Views {
-        BezierView touchTarget;
+        TouchSlopMotionEventView touchTarget;
         MotionEventLogView log;
         AppCompatSeekBar seekBar;
 
         Views(View root) {
-            touchTarget = (BezierView) root.findViewById(R.id.touch_slop_target);
+            touchTarget = (TouchSlopMotionEventView) root.findViewById(R.id.touch_slop_target);
             log = (MotionEventLogView) root.findViewById(R.id.touch_slop_log);
             seekBar = (AppCompatSeekBar) root.findViewById(R.id.touch_slop_seek_bar);
         }

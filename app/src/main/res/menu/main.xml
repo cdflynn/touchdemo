@@ -10,4 +10,9 @@
         android:id="@+id/action_touch_slop"
         android:title="@string/action_touch_slop"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_bezier"
+        android:title="@string/action_bezier"
+        app:showAsAction="never"/>
 </menu>
