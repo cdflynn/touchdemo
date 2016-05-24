@@ -155,25 +155,33 @@ public class BezierView extends View implements MotionEventStream {
         return p;
     }
 
+    /**
+     * The change in the x value that is required to move from the current touch point to
+     * the tangent.
+     */
     private float x(TouchState s) {
         final float currToTan = (float)Math.sqrt((s.distance * s.distance) - (mScaledTouchSlop * mScaledTouchSlop));
         return currToTan * (currToTan/s.distance);
     }
 
+    /**
+     * The change in the y value that is required to move from the current touch point to
+     * the tangent.
+     */
     private float y(TouchState s) {
         final float currToTan = (float)Math.sqrt((s.distance * s.distance) - (mScaledTouchSlop * mScaledTouchSlop));
         return  currToTan * (mScaledTouchSlop/s.distance);
     }
 
     /**
-     * Major angle between the current touch coordinates and the down coordinates
+     * Angle between the current touch coordinates and the down coordinates
      */
     private float angle(TouchState s) {
         return (float) Math.toDegrees(Math.atan2(s.yDown - s.yCurrent, s.xDown - s.xCurrent));
     }
 
     /**
-     * Minor angle between the down event and the tangent point
+     * Angle between the down event and the tangent point
      */
     private float sweep(TouchState s) {
         return (float) Math.toDegrees(Math.asin(mScaledTouchSlop/s.distance));
