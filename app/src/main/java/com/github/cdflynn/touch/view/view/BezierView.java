@@ -1,14 +1,20 @@
 package com.github.cdflynn.touch.view.view;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PathMeasure;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.animation.LinearInterpolator;
 
 import com.github.cdflynn.touch.R;
 import com.github.cdflynn.touch.processing.OnTouchElevator;
@@ -22,7 +28,7 @@ public class BezierView extends View implements MotionEventStream {
      * Container for holding relevant details about any in-progress motion events.
      */
     private static class TouchState {
-        static final float NONE = -1f;
+        static final float NONE = Float.MIN_VALUE;
         float xDown = NONE;
         float yDown = NONE;
         float xCurrent = NONE;
@@ -46,6 +52,8 @@ public class BezierView extends View implements MotionEventStream {
     private Paint mPaint;
     private Path mPath;
     private Path mPathMirror;
+    private Path mLineToCenter;
+    private PathMeasure mPathMeasure;
     private int mScaledTouchSlop;
 
     public BezierView(Context context) {
@@ -74,6 +82,8 @@ public class BezierView extends View implements MotionEventStream {
         mPaint = createPaint();
         mPath = new Path();
         mPathMirror = new Path();
+        mLineToCenter = new Path();
+        mPathMeasure = new PathMeasure();
         mScaledTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop() + ADD_RADIUS;
     }
 
@@ -92,6 +102,11 @@ public class BezierView extends View implements MotionEventStream {
 
         switch(event.getAction()) {
             case MotionEvent.ACTION_UP:
+                mLineToCenter.reset();
+                mLineToCenter.moveTo(mState.xDown, mState.yDown);
+                mLineToCenter.lineTo(mState.xCurrent, mState.yCurrent);
+                settle();
+                break;
             case MotionEvent.ACTION_CANCEL:
                 mState.reset();
                 mListener.onMotionEvent(event);
@@ -185,6 +200,54 @@ public class BezierView extends View implements MotionEventStream {
      */
     private float sweep(TouchState s) {
         return (float) Math.toDegrees(Math.asin(mScaledTouchSlop/s.distance));
+    }
+
+    private void settle() {
+        final float[] points = new float[2];
+        final float fromDistance = mState.distance;
+        ValueAnimator v = ValueAnimator.ofFloat(1f, 0f);
+        v.setInterpolator(new LinearInterpolator());
+        v.setDuration(3000)
+                .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        final float fraction = animation.getAnimatedFraction();
+                        mState.distance = fraction * fromDistance;
+                        setPointFromPercent(mLineToCenter, fromDistance, fraction, points);
+                        mState.xCurrent = points[0];
+                        mState.yCurrent = points[1];
+                        Log.d("points", "[" + points[0] + ", " + points[1] + "]");
+                        invalidate();
+                    }
+                });
+        v.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                mState.reset();
+                invalidate();
+            }
+
+            @Override
+            public void onAnimationPause(Animator animation) {
+                mState.reset();
+                invalidate();
+            }
+        });
+        v.start();
+    }
+
+    /**
+     * Given some path and its length, find the point ([x,y]) on that path at
+     * the given percentage of length.  Store the result in {@code points}.
+     * @param path any path
+     * @param length the length of {@code path}
+     * @param percent the percentage along the path's length to find a point
+     * @param points a float array of length 2, where the coordinates will be stored
+     */
+    private void setPointFromPercent(Path path, float length, float percent, float[] points) {
+        mPathMeasure.setPath(path, false);
+        mPathMeasure.getPosTan(length * percent, points, null);
+
     }
 
     private void calculatePath() {
