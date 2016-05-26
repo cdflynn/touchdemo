@@ -17,7 +17,7 @@
         android:layout_gravity="bottom"
         android:padding="6dp"/>
 
-    <com.github.cdflynn.touch.view.view.BezierView
+    <com.github.cdflynn.touch.view.view.AnimatedBezierView
         android:id="@+id/bezier_touch_target"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

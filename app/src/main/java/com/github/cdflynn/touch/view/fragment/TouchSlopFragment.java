@@ -11,7 +11,6 @@ import android.widget.SeekBar;
 
 import com.github.cdflynn.touch.R;
 import com.github.cdflynn.touch.view.interfaces.MotionEventListener;
-import com.github.cdflynn.touch.view.view.BezierView;
 import com.github.cdflynn.touch.view.view.MotionEventLogView;
 import com.github.cdflynn.touch.view.view.TouchSlopMotionEventView;
 
