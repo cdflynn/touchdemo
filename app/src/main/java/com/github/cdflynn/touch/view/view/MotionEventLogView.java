@@ -26,19 +26,19 @@ public class MotionEventLogView extends LinearLayout {
 
         LoggedEvent(MotionEvent e) {
             this.action = e.getAction();
-            this.rawX = e.getRawX();
-            this.rawY = e.getRawY();
+            this.x = e.getX();
+            this.y = e.getY();
         }
 
-        void overwrite(int action, float rawX, float rawY) {
+        void overwrite(int action, float x, float y) {
             this.action = action;
-            this.rawX = rawX;
-            this.rawY = rawY;
+            this.x = x;
+            this.y = y;
         }
 
         int action;
-        float rawX;
-        float rawY;
+        float x;
+        float y;
     }
 
     static class Views extends BaseViews {
@@ -102,7 +102,7 @@ public class MotionEventLogView extends LinearLayout {
         }
 
         if (e.getAction() == mEventLog.get(0).action) {
-            mEventLog.get(0).overwrite(e.getAction(), e.getRawX(), e.getRawY());
+            mEventLog.get(0).overwrite(e.getAction(), e.getX(), e.getY());
         } else {
             mEventLog.add(0, new LoggedEvent(e));
         }
@@ -124,17 +124,17 @@ public class MotionEventLogView extends LinearLayout {
     }
 
     private SpannableString from(LoggedEvent e) {
-        SpannableString s = new SpannableString(MotionEvent.actionToString(e.action) + rawLocation(e));
+        SpannableString s = new SpannableString(MotionEvent.actionToString(e.action) + location(e));
         int color = textColorFrom(e);
         s.setSpan(new ForegroundColorSpan(color), 0, s.length(), 0);
         return s;
     }
 
-    private String rawLocation(LoggedEvent e) {
+    private String location(LoggedEvent e) {
         if (e == null) {
             return "";
         }
-        return " (" + e.rawX + ", " + e.rawY + ")";
+        return " (" + e.x + ", " + e.y + ")";
     }
 
     private int textColorFrom(LoggedEvent e) {

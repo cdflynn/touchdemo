@@ -10,10 +10,10 @@ import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 
 import com.github.cdflynn.touch.R;
@@ -31,6 +31,8 @@ public class BezierView extends View implements MotionEventStream {
         static final float NONE = Float.MIN_VALUE;
         float xDown = NONE;
         float yDown = NONE;
+        float xDownRaw = NONE;
+        float yDownRaw = NONE;
         float xCurrent = NONE;
         float yCurrent = NONE;
         float distance = NONE;
@@ -40,6 +42,8 @@ public class BezierView extends View implements MotionEventStream {
             yDown = NONE;
             xCurrent = NONE;
             yCurrent = NONE;
+            xDownRaw = NONE;
+            yDownRaw = NONE;
             distance = NONE;
         }
     }
@@ -103,8 +107,8 @@ public class BezierView extends View implements MotionEventStream {
         switch(event.getAction()) {
             case MotionEvent.ACTION_UP:
                 mLineToCenter.reset();
-                mLineToCenter.moveTo(mState.xDown, mState.yDown);
-                mLineToCenter.lineTo(mState.xCurrent, mState.yCurrent);
+                mLineToCenter.moveTo(mState.xCurrent, mState.yCurrent);
+                mLineToCenter.lineTo(mState.xDown, mState.yDown);
                 settle();
                 break;
             case MotionEvent.ACTION_CANCEL:
@@ -114,6 +118,8 @@ public class BezierView extends View implements MotionEventStream {
             case MotionEvent.ACTION_DOWN:
                 mState.xDown = event.getX();
                 mState.yDown = event.getY();
+                mState.xDownRaw = event.getRawX();
+                mState.yDownRaw = event.getRawY();
                 mLastDownX = event.getX();
                 mLastDownY = event.getY();
                 mListener.onMotionEvent(event);
@@ -206,17 +212,17 @@ public class BezierView extends View implements MotionEventStream {
         final float[] points = new float[2];
         final float fromDistance = mState.distance;
         ValueAnimator v = ValueAnimator.ofFloat(1f, 0f);
-        v.setInterpolator(new LinearInterpolator());
-        v.setDuration(3000)
+        v.setInterpolator(new AccelerateInterpolator(.5f));
+        v.setDuration(200)
                 .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     @Override
                     public void onAnimationUpdate(ValueAnimator animation) {
                         final float fraction = animation.getAnimatedFraction();
-                        mState.distance = fraction * fromDistance;
+                        mState.distance = (1 - fraction) * fromDistance;
                         setPointFromPercent(mLineToCenter, fromDistance, fraction, points);
                         mState.xCurrent = points[0];
                         mState.yCurrent = points[1];
-                        Log.d("points", "[" + points[0] + ", " + points[1] + "]");
+                        calculatePath();
                         invalidate();
                     }
                 });
