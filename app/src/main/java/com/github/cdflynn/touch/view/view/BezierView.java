@@ -213,7 +213,7 @@ public class BezierView extends View implements MotionEventStream {
         final float fromDistance = mState.distance;
         ValueAnimator v = ValueAnimator.ofFloat(1f, 0f);
         v.setInterpolator(new AccelerateInterpolator(.5f));
-        v.setDuration(200)
+        v.setDuration(150)
                 .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     @Override
                     public void onAnimationUpdate(ValueAnimator animation) {
