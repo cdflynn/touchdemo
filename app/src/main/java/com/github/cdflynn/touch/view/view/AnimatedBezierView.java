@@ -53,6 +53,8 @@ public class AnimatedBezierView extends BezierView implements MotionEventStream 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
+        // TODO: the touch elevator isn't getting called,
+        // TODO: fix that somehow.
         switch(event.getAction()) {
             case MotionEvent.ACTION_UP:
                 mLineToCenter.reset();
