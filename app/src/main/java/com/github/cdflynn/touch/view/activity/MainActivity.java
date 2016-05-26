@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.widget.FrameLayout;
 
 import com.github.cdflynn.touch.R;
+import com.github.cdflynn.touch.view.fragment.AnimatedBezierFragment;
 import com.github.cdflynn.touch.view.fragment.BaseFragment;
 import com.github.cdflynn.touch.view.fragment.BezierFragment;
 import com.github.cdflynn.touch.view.fragment.NoisyFragment;
@@ -62,6 +63,12 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.action_bezier:
                     if (!currentFragmentTag.equals(BezierFragment.class.getSimpleName())) {
                         navigateTo(BezierFragment.newInstance());
+                        return true;
+                    }
+                    break;
+                case R.id.action_animated_bezier:
+                    if (!currentFragmentTag.equals(AnimatedBezierFragment.class.getSimpleName())) {
+                        navigateTo(AnimatedBezierFragment.newInstance());
                         return true;
                     }
                     break;

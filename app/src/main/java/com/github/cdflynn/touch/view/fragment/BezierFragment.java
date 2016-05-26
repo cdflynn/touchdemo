@@ -11,6 +11,7 @@ import com.github.cdflynn.touch.R;
 import com.github.cdflynn.touch.view.interfaces.MotionEventListener;
 import com.github.cdflynn.touch.view.view.BaseViews;
 import com.github.cdflynn.touch.view.view.AnimatedBezierView;
+import com.github.cdflynn.touch.view.view.BezierView;
 import com.github.cdflynn.touch.view.view.MotionEventLogView;
 
 import butterknife.Bind;
@@ -20,7 +21,7 @@ public class BezierFragment extends BaseFragment {
     static class Views extends BaseViews {
 
         @Bind(R.id.bezier_touch_target)
-        AnimatedBezierView bezierView;
+        BezierView bezierView;
         @Bind(R.id.bezier_log)
         MotionEventLogView log;
 

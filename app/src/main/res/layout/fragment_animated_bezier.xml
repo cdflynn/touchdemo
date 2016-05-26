@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/activity_background"
+    android:padding="30dp"
+    android:clipToPadding="false"
+    android:orientation="vertical">
+
+    <!-- greedy height -->
+    <com.github.cdflynn.touch.view.view.AnimatedBezierView
+        android:id="@+id/animated_bezier_touch_target"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/white_item_ripple"
+        android:clickable="true"
+        android:elevation="@dimen/elevation"
+        android:outlineProvider="bounds"/>
+
+    <TextView
+        android:id="@+id/animation_duration_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="12sp"
+        android:text="@string/duration"/>
+    <SeekBar
+        android:id="@+id/animation_duration_seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginBottom="10dp"/>
+
+    <Spinner
+        android:id="@+id/interpolator_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"/>
+
+</LinearLayout>

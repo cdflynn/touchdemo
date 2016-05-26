@@ -7,5 +7,21 @@
     <string name="action_noisy">Noisy</string>
     <string name="action_touch_slop">Touch Slop</string>
     <string name="action_bezier">Bezier</string>
+    <string name="action_animated_bezier">Animated Bezier</string>
+
+    <string name="duration">Animation Duration: %1$dms</string>
+
+    <string-array name="interpolator_array">
+        <item>Accelerate</item>
+        <item>Accelerate Decelerate</item>
+        <item>Anticipate</item>
+        <item>Anticipate Overshoot</item>
+        <item>Bounce</item>
+        <item>Decelerate</item>
+        <item>Fast out Linear in</item>
+        <item>Fast out Slow in</item>
+        <item>Linear</item>
+        <item>Overshoot</item>
+    </string-array>
 
 </resources>

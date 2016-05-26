@@ -6,16 +6,23 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Interpolator;
 
 import com.github.cdflynn.touch.view.interfaces.MotionEventStream;
 
 public class AnimatedBezierView extends BezierView implements MotionEventStream {
 
+    private static final int ANIMATION_DURATION_MS_DEFAULT = 150;
+    private static final Interpolator INTERPOLATOR_DEFAULT = new AccelerateInterpolator(.5f);
+
     private Path mLineToCenter;
     private PathMeasure mPathMeasure;
+    private Interpolator mInterpolator = INTERPOLATOR_DEFAULT;
+    private int mAnimationDuration = ANIMATION_DURATION_MS_DEFAULT;
 
     public AnimatedBezierView(Context context) {
         super(context);
@@ -57,6 +64,14 @@ public class AnimatedBezierView extends BezierView implements MotionEventStream 
         }
     }
 
+    public void setAnimationDuration(int durationMs) {
+        mAnimationDuration = durationMs;
+    }
+
+    public void setInterpolator(@NonNull Interpolator interpolator) {
+        mInterpolator = interpolator;
+    }
+
     /**
      * Animate the curves from the current pointer position to the down position.
      */
@@ -64,8 +79,8 @@ public class AnimatedBezierView extends BezierView implements MotionEventStream 
         final float[] points = new float[2];
         final float fromDistance = mState.distance;
         ValueAnimator v = ValueAnimator.ofFloat(1f, 0f);
-        v.setInterpolator(new AccelerateInterpolator(.5f));
-        v.setDuration(150)
+        v.setInterpolator(mInterpolator);
+        v.setDuration(mAnimationDuration)
                 .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     @Override
                     public void onAnimationUpdate(ValueAnimator animation) {

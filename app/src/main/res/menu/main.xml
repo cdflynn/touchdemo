@@ -15,4 +15,9 @@
         android:id="@+id/action_bezier"
         android:title="@string/action_bezier"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_animated_bezier"
+        android:title="@string/action_animated_bezier"
+        app:showAsAction="never"/>
 </menu>
