@@ -26,27 +26,28 @@ public class AnimatedBezierView extends BezierView implements MotionEventStream 
 
     public AnimatedBezierView(Context context) {
         super(context);
-        init(context);
+        init();
     }
 
     public AnimatedBezierView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
+        init();
     }
 
     public AnimatedBezierView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context);
+        init();
     }
 
     public AnimatedBezierView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        init(context);
+        init();
     }
 
-    private void init(Context context) {
+    private void init() {
         mLineToCenter = new Path();
         mPathMeasure = new PathMeasure();
+        drawControlPoints(false);
     }
 
     @Override

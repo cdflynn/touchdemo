@@ -46,6 +46,7 @@ public class BezierView extends View implements MotionEventStream {
     private Path mPath;
     private Path mPathMirror;
     private int mScaledTouchSlop;
+    private boolean mDrawControlPoints = true;
     protected TouchState mState;
 
     public BezierView(Context context) {
@@ -75,6 +76,13 @@ public class BezierView extends View implements MotionEventStream {
         mPath = new Path();
         mPathMirror = new Path();
         mScaledTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop() + ADD_RADIUS;
+    }
+
+    /**
+     * Turn on/off drawing the control points.  Default is {@code true}, which will draw them.
+     */
+    protected final void drawControlPoints(boolean shouldDraw) {
+        mDrawControlPoints = shouldDraw;
     }
 
     @Override
@@ -199,12 +207,16 @@ public class BezierView extends View implements MotionEventStream {
         final float controlPointX = mState.xCurrent + mState.distance * .66f;
         final float controlPointY = mState.yCurrent + yMod/3;
         mPath.quadTo(controlPointX, controlPointY, mState.xCurrent + xMod, mState.yCurrent);
-        mPath.addCircle(controlPointX, controlPointY, 10f, Path.Direction.CW);
+        if (mDrawControlPoints) {
+            mPath.addCircle(controlPointX, controlPointY, 10f, Path.Direction.CW);
+        }
 
         final float controlPointXMirror = mState.xCurrent + mState.distance * .66f;
         final float controlPointYMirror = mState.yCurrent - yMod/3;
         mPathMirror.moveTo(mState.xCurrent, mState.yCurrent);
         mPathMirror.quadTo(controlPointXMirror, controlPointYMirror, mState.xCurrent + xMod, mState.yCurrent);
-        mPathMirror.addCircle(controlPointXMirror, controlPointYMirror, 10f, Path.Direction.CW);
+        if (mDrawControlPoints) {
+            mPathMirror.addCircle(controlPointXMirror, controlPointYMirror, 10f, Path.Direction.CW);
+        }
     }
 }
