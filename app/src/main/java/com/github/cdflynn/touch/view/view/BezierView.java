@@ -12,31 +12,14 @@ import android.view.ViewConfiguration;
 
 import com.github.cdflynn.touch.R;
 import com.github.cdflynn.touch.processing.OnTouchElevator;
+import com.github.cdflynn.touch.processing.TouchState;
+import com.github.cdflynn.touch.processing.TouchStateTracker;
 import com.github.cdflynn.touch.view.interfaces.MotionEventListener;
 import com.github.cdflynn.touch.view.interfaces.MotionEventStream;
 
 public class BezierView extends View implements MotionEventStream {
 
     private static final int ADD_RADIUS = 100;
-    /**
-     * Container for holding relevant details about any in-progress motion events.
-     */
-    protected static class TouchState {
-        static final float NONE = -1f;
-        float xDown = NONE;
-        float yDown = NONE;
-        float xCurrent = NONE;
-        float yCurrent = NONE;
-        float distance = NONE;
-
-        public void reset() {
-            xDown = NONE;
-            yDown = NONE;
-            xCurrent = NONE;
-            yCurrent = NONE;
-            distance = NONE;
-        }
-    }
 
     private float mLastDownX = TouchState.NONE;
     private float mLastDownY = TouchState.NONE;
@@ -48,6 +31,7 @@ public class BezierView extends View implements MotionEventStream {
     private int mScaledTouchSlop;
     private boolean mDrawControlPoints = true;
     protected TouchState mState;
+    private TouchStateTracker mTouchStateTracker;
 
     public BezierView(Context context) {
         super(context);
@@ -72,6 +56,7 @@ public class BezierView extends View implements MotionEventStream {
     private void init(Context context) {
         mOnTouchElevator = new OnTouchElevator();
         mState = new TouchState();
+        mTouchStateTracker = new TouchStateTracker(mState);
         mPaint = createPaint();
         mPath = new Path();
         mPathMirror = new Path();
@@ -98,23 +83,19 @@ public class BezierView extends View implements MotionEventStream {
             return super.onTouchEvent(event);
         }
 
+        mTouchStateTracker.onTouchEvent(this, event);
+
         switch(event.getAction()) {
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                mState.reset();
                 mListener.onMotionEvent(event);
                 break;
             case MotionEvent.ACTION_DOWN:
-                mState.xDown = event.getX();
-                mState.yDown = event.getY();
                 mLastDownX = event.getX();
                 mLastDownY = event.getY();
                 mListener.onMotionEvent(event);
                 break;
             case MotionEvent.ACTION_MOVE:
-                mState.xCurrent = event.getX();
-                mState.yCurrent = event.getY();
-                mState.distance = distance(mState.xDown, mState.yDown, mState.xCurrent, mState.yCurrent);
                 if (mState.distance > mScaledTouchSlop) {
                     mListener.onMotionEvent(event);
                 }
@@ -145,12 +126,6 @@ public class BezierView extends View implements MotionEventStream {
                 mState.xCurrent, mState.yCurrent);
         canvas.drawPath(mPathMirror, mPaint);
         canvas.restore();
-    }
-
-    private static float distance(float xDown, float yDown, float xCurrent, float yCurrent) {
-        final float xAbs = Math.abs(xDown - xCurrent);
-        final float yAbs = Math.abs(yDown - yCurrent);
-        return (float)Math.sqrt((yAbs*yAbs) + (xAbs * xAbs));
     }
 
     private Paint createPaint() {
