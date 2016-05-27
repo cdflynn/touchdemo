@@ -21,6 +21,7 @@ public class AnimatedBezierView extends BezierView implements MotionEventStream 
 
     private Path mLineToCenter;
     private PathMeasure mPathMeasure;
+    private ValueAnimator mAnimator;
     private Interpolator mInterpolator = INTERPOLATOR_DEFAULT;
     private int mAnimationDuration = ANIMATION_DURATION_MS_DEFAULT;
 
@@ -53,16 +54,17 @@ public class AnimatedBezierView extends BezierView implements MotionEventStream 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
-        // TODO: the touch elevator isn't getting called,
-        // TODO: fix that somehow.
         switch(event.getAction()) {
             case MotionEvent.ACTION_UP:
                 mLineToCenter.reset();
                 mLineToCenter.moveTo(mState.xCurrent, mState.yCurrent);
                 mLineToCenter.lineTo(mState.xDown, mState.yDown);
                 settle();
-                return false;
+                return super.onTouchEvent(event);
             default:
+                if (mAnimator != null && mAnimator.isRunning()) {
+                    mAnimator.cancel();
+                }
                 return super.onTouchEvent(event);
         }
     }
@@ -79,14 +81,18 @@ public class AnimatedBezierView extends BezierView implements MotionEventStream 
      * Animate the curves from the current pointer position to the down position.
      */
     private void settle() {
+        final float xTo = mState.xDown;
+        final float yTo = mState.yDown;
         final float[] points = new float[2];
         final float fromDistance = mState.distance;
-        ValueAnimator v = ValueAnimator.ofFloat(1f, 0f);
-        v.setInterpolator(mInterpolator);
-        v.setDuration(mAnimationDuration)
+        mAnimator = ValueAnimator.ofFloat(1f, 0f);
+        mAnimator.setInterpolator(mInterpolator);
+        mAnimator.setDuration(mAnimationDuration)
                 .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     @Override
                     public void onAnimationUpdate(ValueAnimator animation) {
+                        mState.xDown = xTo;
+                        mState.yDown = yTo;
                         final float fraction = animation.getAnimatedFraction();
                         mState.distance = (1 - fraction) * fromDistance;
                         setPointFromPercent(mLineToCenter, fromDistance, fraction, points);
@@ -96,7 +102,7 @@ public class AnimatedBezierView extends BezierView implements MotionEventStream 
                         invalidate();
                     }
                 });
-        v.addListener(new AnimatorListenerAdapter() {
+        mAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationCancel(Animator animation) {
                 mState.reset();
@@ -109,7 +115,7 @@ public class AnimatedBezierView extends BezierView implements MotionEventStream 
                 invalidate();
             }
         });
-        v.start();
+        mAnimator.start();
     }
 
     /**
