@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -25,7 +24,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.github.cdflynn.touch.R;
-import com.github.cdflynn.touch.view.interfaces.MotionEventListener;
 import com.github.cdflynn.touch.view.view.AnimatedBezierView;
 import com.github.cdflynn.touch.view.view.BaseViews;
 
@@ -71,7 +69,6 @@ public class AnimatedBezierFragment extends BaseFragment {
         mViews.interpolatorSpinner.setAdapter(spinnerAdapter);
         mViews.interpolatorSpinner.setOnItemSelectedListener(mSpinnerListener);
         mViews.seekBar.setOnSeekBarChangeListener(mSeekBarListener);
-        mViews.animatedBezierView.setMotionEventListener(mMotionEventListener);
         return root;
     }
 
@@ -148,13 +145,6 @@ public class AnimatedBezierFragment extends BaseFragment {
 
         @Override
         public void onNothingSelected(AdapterView<?> parent) {
-            // do nothing
-        }
-    };
-
-    private final MotionEventListener mMotionEventListener = new MotionEventListener() {
-        @Override
-        public void onMotionEvent(MotionEvent e) {
             // do nothing
         }
     };

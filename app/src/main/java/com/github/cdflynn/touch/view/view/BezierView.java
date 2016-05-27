@@ -14,6 +14,7 @@ import com.github.cdflynn.touch.R;
 import com.github.cdflynn.touch.processing.OnTouchElevator;
 import com.github.cdflynn.touch.processing.TouchState;
 import com.github.cdflynn.touch.processing.TouchStateTracker;
+import com.github.cdflynn.touch.util.Geometry;
 import com.github.cdflynn.touch.view.interfaces.MotionEventListener;
 import com.github.cdflynn.touch.view.interfaces.MotionEventStream;
 
@@ -23,11 +24,10 @@ public class BezierView extends View implements MotionEventStream {
 
     private float mLastDownX = TouchState.NONE;
     private float mLastDownY = TouchState.NONE;
-    private MotionEventListener mListener;
+    private MotionEventListener mListener = NO_OP_LISTENER;
     private OnTouchElevator mOnTouchElevator;
     private Paint mPaint;
     private Path mPath;
-    private Path mPathMirror;
     private int mScaledTouchSlop;
     private boolean mDrawControlPoints = true;
     protected TouchState mState;
@@ -59,7 +59,6 @@ public class BezierView extends View implements MotionEventStream {
         mTouchStateTracker = new TouchStateTracker(mState);
         mPaint = createPaint();
         mPath = new Path();
-        mPathMirror = new Path();
         mScaledTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop() + ADD_RADIUS;
     }
 
@@ -78,11 +77,6 @@ public class BezierView extends View implements MotionEventStream {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         mOnTouchElevator.onTouchEvent(this, event);
-
-        if (mListener == null) {
-            return super.onTouchEvent(event);
-        }
-
         mTouchStateTracker.onTouchEvent(this, event);
 
         switch(event.getAction()) {
@@ -109,32 +103,27 @@ public class BezierView extends View implements MotionEventStream {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (mLastDownX != TouchState.NONE && mLastDownY != TouchState.NONE) {
-            canvas.drawCircle(mLastDownX, mLastDownY, mScaledTouchSlop,mPaint);
+
+        // Draw a circle around the last known ACTION_DOWN event, if there was one.
+        if ((mState.xDown == TouchState.NONE && mLastDownX != TouchState.NONE)
+                || (mState.distance != TouchState.NONE && mState.distance < mScaledTouchSlop)) {
+            canvas.drawCircle(mLastDownX, mLastDownY, mScaledTouchSlop, mPaint);
         }
 
-        final float angle = angle(mState);
-        final float sweep = sweep(mState);
         canvas.save();
-        canvas.rotate((angle - sweep),
+        canvas.rotate(angle(mState),
                 mState.xCurrent, mState.yCurrent);
         canvas.drawPath(mPath, mPaint);
-        canvas.restore();
-
-        canvas.save();
-        canvas.rotate((angle + sweep),
-                mState.xCurrent, mState.yCurrent);
-        canvas.drawPath(mPathMirror, mPaint);
         canvas.restore();
     }
 
     private Paint createPaint() {
         Paint p = new Paint();
         p.setStyle(Paint.Style.STROKE);
-        p.setColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+        p.setColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
         p.setStrokeJoin(Paint.Join.ROUND);
         p.setAntiAlias(true);
-        p.setStrokeWidth(3f);
+        p.setStrokeWidth(4f);
         return p;
     }
 
@@ -164,34 +153,64 @@ public class BezierView extends View implements MotionEventStream {
     }
 
     /**
-     * Angle between the down event and the tangent point
+     * Find the angle in degrees between two tangent points
+     * @param tan1X the x coordinate of the first tangent point
+     * @param tan1Y the y coordinate of the first tangent point
+     * @param tan2X the x coordinate of the second tangent point
+     * @param tan2Y the y coordinate of the second tangent point
+     * @return the major sweep angle between the two tangent point, in degrees.
      */
-    private float sweep(TouchState s) {
-        return (float) Math.toDegrees(Math.asin(mScaledTouchSlop/s.distance));
+    private float sweep(float tan1X, float tan1Y, float tan2X, float tan2Y) {
+        final float minorSweep = (float) Math.toDegrees(
+                2 * (Math.asin(.5 * Geometry.distance(tan1X, tan1Y,
+                tan2X, tan2Y) / mScaledTouchSlop)));
+
+        return 360 - minorSweep;
     }
 
-    protected void calculatePath() {
+    /**
+     * Use the current touch state values to re-plot the path.
+     */
+    protected final void calculatePath() {
         mPath.reset();
-        mPathMirror.reset();
         if (mState.yCurrent == TouchState.NONE || mState.xCurrent == TouchState.NONE || mState.distance == TouchState.NONE) {
             return;
         }
-        mPath.moveTo(mState.xCurrent, mState.yCurrent);
+
         final float xMod = x(mState);
         final float yMod = y(mState);
+        mPath.moveTo(mState.xCurrent, mState.yCurrent);
         final float controlPointX = mState.xCurrent + mState.distance * .66f;
         final float controlPointY = mState.yCurrent + yMod/3;
-        mPath.quadTo(controlPointX, controlPointY, mState.xCurrent + xMod, mState.yCurrent);
-        if (mDrawControlPoints) {
-            mPath.addCircle(controlPointX, controlPointY, 10f, Path.Direction.CW);
-        }
+        mPath.quadTo(controlPointX, controlPointY, mState.xCurrent + xMod, mState.yCurrent + yMod);
+
+        final float sweep = sweep(mState.xCurrent + xMod, mState.yCurrent + yMod,
+                mState.xCurrent + xMod, mState.yCurrent - yMod);
+
+        mPath.arcTo(mState.xCurrent + mState.distance - mScaledTouchSlop,
+                mState.yCurrent - mScaledTouchSlop,
+                mState.xCurrent + mState.distance + mScaledTouchSlop,
+                mState.yCurrent + mScaledTouchSlop,
+                sweep/2,
+                -sweep,
+                false);
 
         final float controlPointXMirror = mState.xCurrent + mState.distance * .66f;
         final float controlPointYMirror = mState.yCurrent - yMod/3;
-        mPathMirror.moveTo(mState.xCurrent, mState.yCurrent);
-        mPathMirror.quadTo(controlPointXMirror, controlPointYMirror, mState.xCurrent + xMod, mState.yCurrent);
+        mPath.moveTo(mState.xCurrent, mState.yCurrent);
+        mPath.quadTo(controlPointXMirror, controlPointYMirror, mState.xCurrent + xMod, mState.yCurrent - yMod);
+
         if (mDrawControlPoints) {
-            mPathMirror.addCircle(controlPointXMirror, controlPointYMirror, 10f, Path.Direction.CW);
+            mPath.moveTo(0, 0);
+            mPath.addCircle(controlPointXMirror, controlPointYMirror, 10f, Path.Direction.CW);
+            mPath.addCircle(controlPointX, controlPointY, 10f, Path.Direction.CW);
         }
     }
+
+    private static final MotionEventListener NO_OP_LISTENER = new MotionEventListener() {
+        @Override
+        public void onMotionEvent(MotionEvent e) {
+            // do nothing
+        }
+    };
 }
