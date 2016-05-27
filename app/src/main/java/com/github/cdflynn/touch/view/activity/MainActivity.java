@@ -2,17 +2,11 @@ package com.github.cdflynn.touch.view.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MotionEvent;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.FrameLayout;
 
 import com.github.cdflynn.touch.R;
 import com.github.cdflynn.touch.view.fragment.AnimatedBezierFragment;
@@ -20,19 +14,29 @@ import com.github.cdflynn.touch.view.fragment.BaseFragment;
 import com.github.cdflynn.touch.view.fragment.BezierFragment;
 import com.github.cdflynn.touch.view.fragment.NoisyFragment;
 import com.github.cdflynn.touch.view.fragment.TouchSlopFragment;
-import com.github.cdflynn.touch.view.view.MotionEventLogView;
-import com.github.cdflynn.touch.view.view.NoisyMotionEventView;
-import com.github.cdflynn.touch.view.interfaces.MotionEventListener;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String SAVED_STATE_FRAGMENT = "the fragment that was last showing";
+
+    private int mCurrentFragmentId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mCurrentFragmentId = savedInstanceState != null?
+                savedInstanceState.getInt(SAVED_STATE_FRAGMENT)
+                : R.id.action_noisy;
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        showFragment(NoisyFragment.newInstance());
+        showFragment(fromSavedState(savedInstanceState));
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(SAVED_STATE_FRAGMENT, mCurrentFragmentId);
     }
 
     @Override
@@ -44,36 +48,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        BaseFragment currentFragment = (BaseFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame);
-        if (currentFragment != null) {
-            String currentFragmentTag = currentFragment.getTag();
-            switch(item.getItemId()) {
-                case R.id.action_noisy:
-                    if (!currentFragmentTag.equals(NoisyFragment.class.getSimpleName())) {
-                        navigateTo(NoisyFragment.newInstance());
-                        return true;
-                    }
-                    break;
-                case R.id.action_touch_slop:
-                    if (!currentFragmentTag.equals(TouchSlopFragment.class.getSimpleName())) {
-                        navigateTo(TouchSlopFragment.newInstance());
-                        return true;
-                    }
-                    break;
-                case R.id.action_bezier:
-                    if (!currentFragmentTag.equals(BezierFragment.class.getSimpleName())) {
-                        navigateTo(BezierFragment.newInstance());
-                        return true;
-                    }
-                    break;
-                case R.id.action_animated_bezier:
-                    if (!currentFragmentTag.equals(AnimatedBezierFragment.class.getSimpleName())) {
-                        navigateTo(AnimatedBezierFragment.newInstance());
-                        return true;
-                    }
-                    break;
-            }
-        }
+        int id = item.getItemId();
+        mCurrentFragmentId = id;
+        navigateTo(fromId(id));
         return super.onOptionsItemSelected(item);
     }
 
@@ -99,6 +76,28 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
         getSupportFragmentManager().executePendingTransactions();
 
+    }
+
+    private BaseFragment fromSavedState(Bundle savedState) {
+        if (savedState == null || !savedState.containsKey(SAVED_STATE_FRAGMENT)) {
+            return NoisyFragment.newInstance();
+        }
+        return fromId(savedState.getInt(SAVED_STATE_FRAGMENT, R.id.action_noisy));
+    }
+
+    private BaseFragment fromId(int id) {
+        switch (id) {
+            case R.id.action_noisy:
+                return NoisyFragment.newInstance();
+            case R.id.action_touch_slop:
+                return TouchSlopFragment.newInstance();
+            case R.id.action_bezier:
+                return BezierFragment.newInstance();
+            case R.id.action_animated_bezier:
+                return AnimatedBezierFragment.newInstance();
+            default:
+                return NoisyFragment.newInstance();
+        }
     }
 
 }
