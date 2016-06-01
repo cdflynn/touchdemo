@@ -8,7 +8,7 @@ public class TouchState {
      * No-Value for state.  Typically the {@link TouchState} fields will hold this value
      * if no touch event is in progress.
      */
-    public static final float NONE = Float.NaN;
+    public static final float NONE = -1f;
     /**
      * The relative x coordinate where the motion event started.
      */

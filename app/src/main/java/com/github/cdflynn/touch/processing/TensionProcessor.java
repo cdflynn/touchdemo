@@ -50,6 +50,7 @@ public class TensionProcessor implements TouchProcessor {
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_DOWN:
                 return;
             default:
                 break;

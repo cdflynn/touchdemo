@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/activity_background"
+    android:padding="30dp"
+    android:clipToPadding="false"
+    android:orientation="vertical">
+
+    <com.github.cdflynn.touch.view.view.TensionAnimatedBezierView
+        android:id="@+id/tension_animated_bezier_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/white_item_ripple"
+        android:clickable="true"
+        android:elevation="@dimen/elevation"
+        android:outlineProvider="bounds"/>
+
+
+</LinearLayout>

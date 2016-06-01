@@ -20,4 +20,9 @@
         android:id="@+id/action_animated_bezier"
         android:title="@string/action_animated_bezier"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_tension"
+        android:title="@string/action_tension"
+        app:showAsAction="never"/>
 </menu>

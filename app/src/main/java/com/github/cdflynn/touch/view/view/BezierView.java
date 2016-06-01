@@ -12,6 +12,7 @@ import android.view.ViewConfiguration;
 
 import com.github.cdflynn.touch.R;
 import com.github.cdflynn.touch.processing.OnTouchElevator;
+import com.github.cdflynn.touch.processing.TouchProcessor;
 import com.github.cdflynn.touch.processing.TouchState;
 import com.github.cdflynn.touch.processing.TouchStateTracker;
 import com.github.cdflynn.touch.util.Geometry;
@@ -30,8 +31,8 @@ public class BezierView extends View implements MotionEventStream {
     private Path mPath;
     private int mScaledTouchSlop;
     private boolean mDrawControlPoints = true;
+    private TouchProcessor mTouchProcessor;
     protected TouchState mState;
-    private TouchStateTracker mTouchStateTracker;
 
     public BezierView(Context context) {
         super(context);
@@ -56,7 +57,7 @@ public class BezierView extends View implements MotionEventStream {
     private void init(Context context) {
         mOnTouchElevator = new OnTouchElevator();
         mState = new TouchState();
-        mTouchStateTracker = new TouchStateTracker(mState);
+        mTouchProcessor = new TouchStateTracker(mState);
         mPaint = createPaint();
         mPath = new Path();
         mScaledTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop() + ADD_RADIUS;
@@ -69,6 +70,14 @@ public class BezierView extends View implements MotionEventStream {
         mDrawControlPoints = shouldDraw;
     }
 
+    /**
+     * Override the default touch processor.
+     * @param t
+     */
+    protected final void setTouchProcessor(TouchProcessor t) {
+        mTouchProcessor = t;
+    }
+
     @Override
     public void setMotionEventListener(MotionEventListener listener) {
         mListener = listener;
@@ -77,7 +86,7 @@ public class BezierView extends View implements MotionEventStream {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         mOnTouchElevator.onTouchEvent(this, event);
-        mTouchStateTracker.onTouchEvent(this, event);
+        mTouchProcessor.onTouchEvent(this, event);
 
         switch(event.getAction()) {
             case MotionEvent.ACTION_UP:
