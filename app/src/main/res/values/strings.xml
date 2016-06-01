@@ -11,6 +11,7 @@
     <string name="action_tension">Tension</string>
 
     <string name="duration">Animation Duration: %1$dms</string>
+    <string name="tension">Tension: %1$f</string>
 
     <string-array name="interpolator_array">
         <item>Accelerate</item>
