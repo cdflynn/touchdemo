@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/activity_background"
@@ -35,5 +36,15 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_marginBottom="10dp"/>
+
+    <io.apptik.widget.MultiSlider
+        android:id="@+id/tension_multi_slider"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginBottom="10dp"
+        app:rangeColor="@color/ghost"
+        app:thumbColor="@color/colorAccent"
+        app:range1Color="@color/colorAccent"
+        app:range2Color="@color/colorAccent"/>
 
 </LinearLayout>

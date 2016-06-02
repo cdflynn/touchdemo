@@ -1,6 +1,7 @@
 package com.github.cdflynn.touch.view.view;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
 
 import com.github.cdflynn.touch.processing.InterpolatedTensionProcessor;
@@ -33,6 +34,11 @@ public class InterpolatedTensionView extends AnimatedBezierView {
     private void init() {
         mTensionProcessor = new InterpolatedTensionProcessor(new TouchStateTracker(mState), mState);
         setTouchProcessor(mTensionProcessor);
+    }
+
+    public void setRadii(int min, int max) {
+        mTensionProcessor.setRadii(min, max);
+        invalidate();
     }
 
     public void setTension(float tension) {

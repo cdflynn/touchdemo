@@ -8,6 +8,7 @@
     <color name="textColorAccentError">#9b794f</color>
     <color name="selection_mask">#8bdae0fc</color>
     <color name="selection_ripple">#a5c5ccf5</color>
+    <color name="ghost">#0b000000</color>
     <color name="activity_background">#e6e5e5</color>
 
 

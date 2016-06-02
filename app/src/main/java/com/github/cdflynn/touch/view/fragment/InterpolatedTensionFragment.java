@@ -14,12 +14,15 @@ import com.github.cdflynn.touch.view.view.BaseViews;
 import com.github.cdflynn.touch.view.view.InterpolatedTensionView;
 
 import butterknife.Bind;
+import io.apptik.widget.MultiSlider;
 
 public class InterpolatedTensionFragment extends BaseFragment {
 
     private static final float MAX_TENSION = 1f;
     private static final float MIN_TENSION = .01f;
     private static final float DEFAULT_TENSION = (MAX_TENSION - MIN_TENSION)/2 + MIN_TENSION;
+    private static final int RADIUS_MIN = 0;
+    private static final int RADIUS_MAX = 1500;
 
     static class Views extends BaseViews {
 
@@ -29,6 +32,8 @@ public class InterpolatedTensionFragment extends BaseFragment {
         SeekBar seekBar;
         @Bind(R.id.tension_text)
         TextView tensionText;
+        @Bind(R.id.tension_multi_slider)
+        MultiSlider multiSlider;
 
         Views(View root) {
             super(root);
@@ -50,6 +55,11 @@ public class InterpolatedTensionFragment extends BaseFragment {
         mViews.seekBar.setOnSeekBarChangeListener(mSeekBarChangeListener);
         mViews.tensionView.setTension(DEFAULT_TENSION);
         mViews.tensionText.setText(getString(R.string.tension, DEFAULT_TENSION));
+        mViews.multiSlider.setMin(RADIUS_MIN);
+        mViews.multiSlider.setMax(RADIUS_MAX);
+        mViews.multiSlider.getThumb(0).setValue(RADIUS_MIN);
+        mViews.multiSlider.getThumb(1).setValue(RADIUS_MAX);
+        mViews.multiSlider.setOnThumbValueChangeListener(mRadiusChangeListener);
         return root;
     }
 
@@ -73,6 +83,15 @@ public class InterpolatedTensionFragment extends BaseFragment {
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
 
+        }
+    };
+
+    private final MultiSlider.OnThumbValueChangeListener mRadiusChangeListener = new MultiSlider.OnThumbValueChangeListener() {
+        @Override
+        public void onValueChanged(MultiSlider multiSlider, MultiSlider.Thumb thumb, int thumbIndex, int value) {
+            final int min = mViews.multiSlider.getThumb(0).getValue();
+            final int max = mViews.multiSlider.getThumb(1).getValue();
+            mViews.tensionView.setRadii(min, max);
         }
     };
 }
