@@ -13,7 +13,7 @@ import com.github.cdflynn.touch.util.Geometry;
 
 public class TensionProcessor implements TouchProcessor {
 
-    private static final int DEFAULT_MAX_RADIUS = 1200;
+    private static final int DEFAULT_MAX_RADIUS = 1400;
     private static final int DEFAULT_MIN_RADIUS = 100;
     private static final float DEFAULT_INTERPOLATION_FACTOR = 1.0f;
     private static final float DEFAULT_TENSION_FACTOR = .5f;
@@ -92,6 +92,11 @@ public class TensionProcessor implements TouchProcessor {
         }
 
         final float radiusSurplus = realRadius - mMinRadius;
+
+        if (realRadius > mMaxRadius) {
+            return (mMaxRadius - mMinRadius) * interpolatedTension + mMinRadius;
+        }
+
         return mMinRadius + (radiusSurplus * interpolatedTension);
     }
 

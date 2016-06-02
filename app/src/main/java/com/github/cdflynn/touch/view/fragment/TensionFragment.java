@@ -17,8 +17,9 @@ import butterknife.Bind;
 
 public class TensionFragment extends BaseFragment {
 
-    private static final float MAX_TENSION = 10f;
-    private static final float MIN_TENSION = .5f;
+    private static final float MAX_TENSION = 1f;
+    private static final float MIN_TENSION = .01f;
+    private static final float DEFAULT_TENSION = (MAX_TENSION - MIN_TENSION)/2 + MIN_TENSION;
 
     static class Views extends BaseViews {
 
@@ -45,9 +46,10 @@ public class TensionFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_tension, container, false);
         mViews = new Views(root);
+        mViews.seekBar.setProgress(50);
         mViews.seekBar.setOnSeekBarChangeListener(mSeekBarChangeListener);
-        mViews.tensionView.setTension(MIN_TENSION);
-        mViews.tensionText.setText(getString(R.string.tension, MIN_TENSION));
+        mViews.tensionView.setTension(DEFAULT_TENSION);
+        mViews.tensionText.setText(getString(R.string.tension, DEFAULT_TENSION));
         return root;
     }
 

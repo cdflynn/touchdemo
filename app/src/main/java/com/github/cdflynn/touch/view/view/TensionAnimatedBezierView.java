@@ -2,7 +2,6 @@ package com.github.cdflynn.touch.view.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 
 import com.github.cdflynn.touch.processing.TensionProcessor;
 import com.github.cdflynn.touch.processing.TouchStateTracker;
