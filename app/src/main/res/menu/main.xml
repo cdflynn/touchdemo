@@ -25,4 +25,9 @@
         android:id="@+id/action_tension"
         android:title="@string/action_tension"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_interpolated_tension"
+        android:title="@string/action_interpolated_tension"
+        app:showAsAction="never"/>
 </menu>

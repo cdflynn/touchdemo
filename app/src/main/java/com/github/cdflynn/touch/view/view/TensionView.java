@@ -6,26 +6,26 @@ import android.util.AttributeSet;
 import com.github.cdflynn.touch.processing.TensionProcessor;
 import com.github.cdflynn.touch.processing.TouchStateTracker;
 
-public class TensionAnimatedBezierView extends AnimatedBezierView {
+public class TensionView extends AnimatedBezierView {
 
     private TensionProcessor mTensionProcessor;
 
-    public TensionAnimatedBezierView(Context context) {
+    public TensionView(Context context) {
         super(context);
         init();
     }
 
-    public TensionAnimatedBezierView(Context context, AttributeSet attrs) {
+    public TensionView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public TensionAnimatedBezierView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public TensionView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
 
-    public TensionAnimatedBezierView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public TensionView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init();
     }

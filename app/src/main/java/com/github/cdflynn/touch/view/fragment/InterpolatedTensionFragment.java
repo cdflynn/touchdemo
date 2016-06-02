@@ -11,24 +11,24 @@ import android.widget.TextView;
 
 import com.github.cdflynn.touch.R;
 import com.github.cdflynn.touch.view.view.BaseViews;
-import com.github.cdflynn.touch.view.view.TensionView;
+import com.github.cdflynn.touch.view.view.InterpolatedTensionView;
 
 import butterknife.Bind;
 
-public class TensionFragment extends BaseFragment {
+public class InterpolatedTensionFragment extends BaseFragment {
 
-    private static final float DEFAULT_TENSION = .5f;
-    private static final float TENSION_MAX = .9f;
-    private static final float TENSION_MIN = .1f;
+    private static final float MAX_TENSION = 1f;
+    private static final float MIN_TENSION = .01f;
+    private static final float DEFAULT_TENSION = (MAX_TENSION - MIN_TENSION)/2 + MIN_TENSION;
 
     static class Views extends BaseViews {
 
-        @Bind(R.id.tension_view)
-        TensionView tensionView;
-        @Bind(R.id.tension_text)
-        TextView tensionText;
+        @Bind(R.id.interpolated_tension_view)
+        InterpolatedTensionView tensionView;
         @Bind(R.id.tension_seek_bar)
         SeekBar seekBar;
+        @Bind(R.id.tension_text)
+        TextView tensionText;
 
         Views(View root) {
             super(root);
@@ -37,31 +37,32 @@ public class TensionFragment extends BaseFragment {
 
     private Views mViews;
 
-    public static TensionFragment newInstance() {
-        return new TensionFragment();
+    public static InterpolatedTensionFragment newInstance() {
+        return new InterpolatedTensionFragment();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_tension, container, false);
+        View root = inflater.inflate(R.layout.fragment_interpolated_tension, container, false);
         mViews = new Views(root);
         mViews.seekBar.setProgress(50);
+        mViews.seekBar.setOnSeekBarChangeListener(mSeekBarChangeListener);
+        mViews.tensionView.setTension(DEFAULT_TENSION);
         mViews.tensionText.setText(getString(R.string.tension, DEFAULT_TENSION));
-        mViews.seekBar.setOnSeekBarChangeListener(mSeekBarListener);
         return root;
     }
 
     private float progressToTension(@IntRange(from = 0, to = 100) int progress) {
-        return (TENSION_MAX - TENSION_MIN) * ((float)(progress)/100) + TENSION_MIN;
+        return ((float)progress/100 * (MAX_TENSION - MIN_TENSION)) + MIN_TENSION;
     }
 
-    private final SeekBar.OnSeekBarChangeListener mSeekBarListener = new SeekBar.OnSeekBarChangeListener() {
+    private final SeekBar.OnSeekBarChangeListener mSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            final float tension = progressToTension(progress);
+            float tension = progressToTension(progress);
             mViews.tensionText.setText(getString(R.string.tension, tension));
-            mViews.tensionView.setTension(tension);
+            mViews.tensionView.setTension(progressToTension(progress));
         }
 
         @Override
