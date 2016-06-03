@@ -22,7 +22,9 @@ public class InterpolatedTensionFragment extends BaseFragment {
     private static final float MIN_TENSION = 0f;
     private static final float DEFAULT_TENSION = (MAX_TENSION - MIN_TENSION)/2 + MIN_TENSION;
     private static final int RADIUS_MIN = 0;
-    private static final int RADIUS_MAX/*IMUS*/ = 1500;
+    private static final int RADIUS_MAX/*IMUS*/ = 1300;
+    private static final int DEFAULT_RADIUS_MIN = 300;
+    private static final int DEFAULT_RADIUS_MAX = 500;
 
     static class Views extends BaseViews {
 
@@ -55,10 +57,11 @@ public class InterpolatedTensionFragment extends BaseFragment {
         mViews.seekBar.setOnSeekBarChangeListener(mSeekBarChangeListener);
         mViews.tensionView.setTension(DEFAULT_TENSION);
         mViews.tensionText.setText(getString(R.string.tension, DEFAULT_TENSION));
+        mViews.tensionView.setRadii(DEFAULT_RADIUS_MIN, DEFAULT_RADIUS_MAX);
         mViews.multiSlider.setMin(RADIUS_MIN);
         mViews.multiSlider.setMax(RADIUS_MAX);
-        mViews.multiSlider.getThumb(0).setValue(RADIUS_MIN);
-        mViews.multiSlider.getThumb(1).setValue(RADIUS_MAX);
+        mViews.multiSlider.getThumb(0).setValue(DEFAULT_RADIUS_MIN);
+        mViews.multiSlider.getThumb(1).setValue(DEFAULT_RADIUS_MAX);
         mViews.multiSlider.setOnThumbValueChangeListener(mRadiusChangeListener);
         return root;
     }

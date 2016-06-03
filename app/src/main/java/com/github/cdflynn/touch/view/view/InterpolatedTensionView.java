@@ -8,7 +8,6 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import com.github.cdflynn.touch.R;
@@ -19,20 +18,20 @@ import com.github.cdflynn.touch.processing.TouchStateTracker;
 public class InterpolatedTensionView extends AnimatedBezierView {
 
     @ColorRes
-    private static final int TENSION_NONE = R.color.colorAccent;
+    private static final int TENSION_NONE = R.color.tensionNone;
     @ColorRes
-    private static final int TENSION_START = R.color.textColorAccent;
+    private static final int TENSION_START = R.color.tensionStart;
     @ColorRes
-    private static final int TENSION_END = R.color.textColorAccentError;
+    private static final int TENSION_END = R.color.tensionEnd;
 
     private InterpolatedTensionProcessor mTensionProcessor;
 
     private float mLastDownX = TouchState.NONE;
     private float mLastDownY = TouchState.NONE;
-    private int mRadiusMin = 0;
-    private int mRadiusMax = 0;
-    private Paint mMinRadiusPaint = new Paint();
-    private Paint mMaxRadiusPaint = new Paint();
+    private int mRadiusMin;
+    private int mRadiusMax;
+    private Paint mMinRadiusPaint;
+    private Paint mMaxRadiusPaint;
     private ArgbEvaluator mArgbEvaluator;
     @ColorInt
     private int mNoTensionColor;
@@ -121,21 +120,17 @@ public class InterpolatedTensionView extends AnimatedBezierView {
     @ColorInt
     private int getInterpolatedColor(TouchState s) {
         if (s.distance == TouchState.NONE) {
-            Log.d("collin", "NONE");
             return mNoTensionColor;
         }
 
         if (mRadiusMin == mRadiusMax) {
-            Log.d("collin", "Max Tension");
             return (int) mArgbEvaluator.evaluate((s.distance/mRadiusMax), mNoTensionColor, mEndTensionColor);
         }
 
         if (s.distance <= mRadiusMin) {
-            Log.d("collin", "No Tension");
             return (int) mArgbEvaluator.evaluate((s.distance/mRadiusMin), mNoTensionColor, mStartTensionColor);
         }
 
-        Log.d("collin", "Interpolated tension");
         final float fractionalDistance = (s.distance - mRadiusMin)/(mRadiusMax - mRadiusMin);
         return (int)mArgbEvaluator.evaluate(fractionalDistance, mStartTensionColor, mEndTensionColor);
 
