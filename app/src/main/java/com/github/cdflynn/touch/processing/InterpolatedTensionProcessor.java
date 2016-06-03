@@ -2,6 +2,7 @@ package com.github.cdflynn.touch.processing;
 
 import android.graphics.Path;
 import android.graphics.PathMeasure;
+import android.support.annotation.FloatRange;
 import android.support.annotation.IntRange;
 import android.view.MotionEvent;
 import android.view.View;
@@ -44,8 +45,8 @@ public class InterpolatedTensionProcessor implements TouchProcessor {
         mMaxRadius = max;
     }
 
-    public void setTension(float tension) {
-        mInterpolator = new DecelerateInterpolator(tension);
+    public void setTension(@FloatRange(from = 0) float tension) {
+        mTensionFactor = tension;
     }
 
     @Override
@@ -60,10 +61,7 @@ public class InterpolatedTensionProcessor implements TouchProcessor {
             default:
                 break;
         }
-        final float deltaX = mState.xCurrent - mState.xDown;
-        final float deltaY = mState.yCurrent - mState.yDown;
-        final float interpolatedTension = interpolatedTension(deltaX, deltaY);
-        final float interpolatedDistance = interpolatedDistance(deltaX, deltaY, interpolatedTension);
+        final float interpolatedDistance = interpolatedDistance(mState.distance);
         interpolatedCurrent(mState, interpolatedDistance, mCoords);
         mState.xCurrent = mCoords[0];
         mState.yCurrent = mCoords[1];
@@ -82,20 +80,22 @@ public class InterpolatedTensionProcessor implements TouchProcessor {
         mPathMeasure.getPosTan(distance, coords, null);
     }
 
-    private float interpolatedDistance(float deltaX, float deltaY, float interpolatedTension) {
-        float realRadius = (float) Math.sqrt(deltaX*deltaX + deltaY*deltaY);
-
-        if (realRadius < mMinRadius) {
-            return realRadius;
+    private float interpolatedDistance(float realDistance) {
+        if (realDistance < mMinRadius) {
+            return realDistance;
         }
 
-        final float radiusSurplus = realRadius - mMinRadius;
+        final float radiusSurplus = realDistance - mMinRadius;
+        final float tensionZone = mMaxRadius - mMinRadius;
+        final float tensionZoneRequiredPullDistance = tensionZone * (mTensionFactor+1);
 
-        if (realRadius > mMaxRadius) {
-            return (mMaxRadius - mMinRadius) * interpolatedTension + mMinRadius;
+        if (realDistance >= (tensionZoneRequiredPullDistance + mMinRadius)) {
+            return mMaxRadius;
         }
 
-        return mMinRadius + (radiusSurplus * interpolatedTension);
+        final float realProgress = radiusSurplus/tensionZoneRequiredPullDistance;
+        final float interpolatedProgress = mInterpolator.getInterpolation(realProgress);
+        return mMinRadius + (interpolatedProgress * tensionZone);
     }
 
     private float interpolatedTension(float deltaX, float deltaY) {

@@ -18,11 +18,11 @@ import io.apptik.widget.MultiSlider;
 
 public class InterpolatedTensionFragment extends BaseFragment {
 
-    private static final float MAX_TENSION = 1f;
-    private static final float MIN_TENSION = .01f;
+    private static final float MAX_TENSION = 2f;
+    private static final float MIN_TENSION = 0f;
     private static final float DEFAULT_TENSION = (MAX_TENSION - MIN_TENSION)/2 + MIN_TENSION;
     private static final int RADIUS_MIN = 0;
-    private static final int RADIUS_MAX = 1500;
+    private static final int RADIUS_MAX/*IMUS*/ = 1500;
 
     static class Views extends BaseViews {
 
