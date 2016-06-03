@@ -1,10 +1,14 @@
 package com.github.cdflynn.touch.view.view;
 
+import android.animation.ArgbEvaluator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import com.github.cdflynn.touch.R;
@@ -14,6 +18,13 @@ import com.github.cdflynn.touch.processing.TouchStateTracker;
 
 public class InterpolatedTensionView extends AnimatedBezierView {
 
+    @ColorRes
+    private static final int TENSION_NONE = R.color.colorAccent;
+    @ColorRes
+    private static final int TENSION_START = R.color.textColorAccent;
+    @ColorRes
+    private static final int TENSION_END = R.color.textColorAccentError;
+
     private InterpolatedTensionProcessor mTensionProcessor;
 
     private float mLastDownX = TouchState.NONE;
@@ -22,6 +33,14 @@ public class InterpolatedTensionView extends AnimatedBezierView {
     private int mRadiusMax = 0;
     private Paint mMinRadiusPaint = new Paint();
     private Paint mMaxRadiusPaint = new Paint();
+    private ArgbEvaluator mArgbEvaluator;
+    @ColorInt
+    private int mNoTensionColor;
+    @ColorInt
+    private int mStartTensionColor;
+    @ColorInt
+    private int mEndTensionColor;
+
 
     public InterpolatedTensionView(Context context) {
         super(context);
@@ -43,17 +62,22 @@ public class InterpolatedTensionView extends AnimatedBezierView {
         init(context);
     }
 
+    private Paint createRadiusPaint(@ColorInt int color) {
+        Paint p = new Paint();
+        p.setStyle(Paint.Style.STROKE);
+        p.setStrokeWidth(2f);
+        p.setAntiAlias(true);
+        p.setColor(color);
+        return p;
+    }
+
     private void init(Context context) {
-        mMaxRadiusPaint.setStyle(Paint.Style.STROKE);
-        mMaxRadiusPaint.setStrokeWidth(2f);
-        mMaxRadiusPaint.setAntiAlias(true);
-        mMaxRadiusPaint.setColor(ContextCompat.getColor(context, R.color.textColorAccentError));
-
-        mMinRadiusPaint.setStyle(Paint.Style.STROKE);
-        mMinRadiusPaint.setStrokeWidth(2f);
-        mMinRadiusPaint.setAntiAlias(true);
-        mMinRadiusPaint.setColor(ContextCompat.getColor(context, R.color.textColorAccent));
-
+        mNoTensionColor = ContextCompat.getColor(context, TENSION_NONE);
+        mStartTensionColor = ContextCompat.getColor(context, TENSION_START);
+        mEndTensionColor = ContextCompat.getColor(context, TENSION_END);
+        mMinRadiusPaint = createRadiusPaint(mStartTensionColor);
+        mMaxRadiusPaint = createRadiusPaint(mEndTensionColor);
+        mArgbEvaluator = new ArgbEvaluator();
         mTensionProcessor = new InterpolatedTensionProcessor(new TouchStateTracker(mState), mState);
         setTouchProcessor(mTensionProcessor);
     }
@@ -86,10 +110,34 @@ public class InterpolatedTensionView extends AnimatedBezierView {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        setColor(getInterpolatedColor(mState));
         super.onDraw(canvas);
         if (mLastDownX != TouchState.NONE && mLastDownY != TouchState.NONE) {
             canvas.drawCircle(mLastDownX, mLastDownY, mRadiusMin, mMinRadiusPaint);
             canvas.drawCircle(mLastDownX, mLastDownY, mRadiusMax, mMaxRadiusPaint);
         }
+    }
+
+    @ColorInt
+    private int getInterpolatedColor(TouchState s) {
+        if (s.distance == TouchState.NONE) {
+            Log.d("collin", "NONE");
+            return mNoTensionColor;
+        }
+
+        if (mRadiusMin == mRadiusMax) {
+            Log.d("collin", "Max Tension");
+            return (int) mArgbEvaluator.evaluate((s.distance/mRadiusMax), mNoTensionColor, mEndTensionColor);
+        }
+
+        if (s.distance <= mRadiusMin) {
+            Log.d("collin", "No Tension");
+            return (int) mArgbEvaluator.evaluate((s.distance/mRadiusMin), mNoTensionColor, mStartTensionColor);
+        }
+
+        Log.d("collin", "Interpolated tension");
+        final float fractionalDistance = (s.distance - mRadiusMin)/(mRadiusMax - mRadiusMin);
+        return (int)mArgbEvaluator.evaluate(fractionalDistance, mStartTensionColor, mEndTensionColor);
+
     }
 }

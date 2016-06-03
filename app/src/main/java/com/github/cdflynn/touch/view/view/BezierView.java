@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.support.annotation.ColorInt;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -76,6 +77,10 @@ public class BezierView extends View implements MotionEventStream {
      */
     protected final void setTouchProcessor(TouchProcessor t) {
         mTouchProcessor = t;
+    }
+
+    protected final void setColor(@ColorInt int color) {
+        mPaint.setColor(color);
     }
 
     @Override
