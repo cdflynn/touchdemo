@@ -31,7 +31,6 @@ public class BezierView extends View implements MotionEventStream {
     private Paint mPaint;
     private Path mPath;
     private int mScaledTouchSlop;
-    private boolean mDrawControlPoints = true;
     private TouchProcessor mTouchProcessor;
     protected TouchState mState;
 
@@ -65,15 +64,7 @@ public class BezierView extends View implements MotionEventStream {
     }
 
     /**
-     * Turn on/off drawing the control points.  Default is {@code true}, which will draw them.
-     */
-    protected final void drawControlPoints(boolean shouldDraw) {
-        mDrawControlPoints = shouldDraw;
-    }
-
-    /**
      * Override the default touch processor.
-     * @param t
      */
     protected final void setTouchProcessor(TouchProcessor t) {
         mTouchProcessor = t;
@@ -213,12 +204,6 @@ public class BezierView extends View implements MotionEventStream {
         final float controlPointYMirror = mState.yCurrent - yMod/3;
         mPath.moveTo(mState.xCurrent, mState.yCurrent);
         mPath.quadTo(controlPointXMirror, controlPointYMirror, mState.xCurrent + xMod, mState.yCurrent - yMod);
-
-        if (mDrawControlPoints) {
-            mPath.moveTo(0, 0);
-            mPath.addCircle(controlPointXMirror, controlPointYMirror, 10f, Path.Direction.CW);
-            mPath.addCircle(controlPointX, controlPointY, 10f, Path.Direction.CW);
-        }
     }
 
     private static final MotionEventListener NO_OP_LISTENER = new MotionEventListener() {

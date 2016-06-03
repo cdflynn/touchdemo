@@ -48,7 +48,6 @@ public class AnimatedBezierView extends BezierView implements MotionEventStream 
     private void init() {
         mLineToCenter = new Path();
         mPathMeasure = new PathMeasure();
-        drawControlPoints(false);
     }
 
     @Override
