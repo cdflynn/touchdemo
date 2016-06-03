@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import com.github.cdflynn.touch.R;
 import com.github.cdflynn.touch.view.interfaces.MotionEventListener;
 import com.github.cdflynn.touch.view.view.BaseViews;
-import com.github.cdflynn.touch.view.view.AnimatedBezierView;
 import com.github.cdflynn.touch.view.view.BezierView;
 import com.github.cdflynn.touch.view.view.MotionEventLogView;
 

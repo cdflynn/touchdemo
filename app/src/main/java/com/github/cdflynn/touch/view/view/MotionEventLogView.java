@@ -91,7 +91,7 @@ public class MotionEventLogView extends LinearLayout {
 
     private void trim() {
         if (mEventLog.size() > CAPACITY) {
-            mEventLog.remove(mEventLog.size() -1);
+            mEventLog.remove(mEventLog.size() - 1);
         }
     }
 
@@ -114,7 +114,7 @@ public class MotionEventLogView extends LinearLayout {
             return;
         }
         SpannableStringBuilder history = new SpannableStringBuilder();
-        for (int i = (mEventLog.size() -1); i >= 0; i--) {
+        for (int i = (mEventLog.size() - 1); i >= 0; i--) {
             history.append(from(mEventLog.get(i)));
             if (i != 0) {
                 history.append('\n');

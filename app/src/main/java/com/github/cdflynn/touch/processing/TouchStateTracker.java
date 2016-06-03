@@ -15,7 +15,7 @@ public class TouchStateTracker implements TouchProcessor {
 
     @Override
     public void onTouchEvent(View v, MotionEvent event) {
-        switch(event.getAction()) {
+        switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
                 mState.reset();

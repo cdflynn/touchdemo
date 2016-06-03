@@ -20,7 +20,7 @@ public class InterpolatedTensionFragment extends BaseFragment {
 
     private static final float MAX_TENSION = 2f;
     private static final float MIN_TENSION = 0f;
-    private static final float DEFAULT_TENSION = (MAX_TENSION - MIN_TENSION)/2 + MIN_TENSION;
+    private static final float DEFAULT_TENSION = (MAX_TENSION - MIN_TENSION) / 2 + MIN_TENSION;
     private static final int RADIUS_MIN = 0;
     private static final int RADIUS_MAX/*IMUS*/ = 1300;
     private static final int DEFAULT_RADIUS_MIN = 300;
@@ -67,7 +67,7 @@ public class InterpolatedTensionFragment extends BaseFragment {
     }
 
     private float progressToTension(@IntRange(from = 0, to = 100) int progress) {
-        return ((float)progress/100 * (MAX_TENSION - MIN_TENSION)) + MIN_TENSION;
+        return ((float) progress / 100 * (MAX_TENSION - MIN_TENSION)) + MIN_TENSION;
     }
 
     private final SeekBar.OnSeekBarChangeListener mSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {

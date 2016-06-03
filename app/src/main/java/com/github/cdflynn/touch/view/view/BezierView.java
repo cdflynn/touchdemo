@@ -84,7 +84,7 @@ public class BezierView extends View implements MotionEventStream {
         mOnTouchElevator.onTouchEvent(this, event);
         mTouchProcessor.onTouchEvent(this, event);
 
-        switch(event.getAction()) {
+        switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
                 mListener.onMotionEvent(event);
@@ -137,8 +137,8 @@ public class BezierView extends View implements MotionEventStream {
      * the tangent.
      */
     private float x(TouchState s) {
-        final float currToTan = (float)Math.sqrt((s.distance * s.distance) - (mScaledTouchSlop * mScaledTouchSlop));
-        return currToTan * (currToTan/s.distance);
+        final float currToTan = (float) Math.sqrt((s.distance * s.distance) - (mScaledTouchSlop * mScaledTouchSlop));
+        return currToTan * (currToTan / s.distance);
     }
 
     /**
@@ -146,8 +146,8 @@ public class BezierView extends View implements MotionEventStream {
      * the tangent.
      */
     private float y(TouchState s) {
-        final float currToTan = (float)Math.sqrt((s.distance * s.distance) - (mScaledTouchSlop * mScaledTouchSlop));
-        return  currToTan * (mScaledTouchSlop/s.distance);
+        final float currToTan = (float) Math.sqrt((s.distance * s.distance) - (mScaledTouchSlop * mScaledTouchSlop));
+        return currToTan * (mScaledTouchSlop / s.distance);
     }
 
     /**
@@ -159,6 +159,7 @@ public class BezierView extends View implements MotionEventStream {
 
     /**
      * Find the angle in degrees between two tangent points
+     *
      * @param tan1X the x coordinate of the first tangent point
      * @param tan1Y the y coordinate of the first tangent point
      * @param tan2X the x coordinate of the second tangent point
@@ -168,7 +169,7 @@ public class BezierView extends View implements MotionEventStream {
     private float sweep(float tan1X, float tan1Y, float tan2X, float tan2Y) {
         final float minorSweep = (float) Math.toDegrees(
                 2 * (Math.asin(.5 * Geometry.distance(tan1X, tan1Y,
-                tan2X, tan2Y) / mScaledTouchSlop)));
+                        tan2X, tan2Y) / mScaledTouchSlop)));
 
         return 360 - minorSweep;
     }
@@ -186,7 +187,7 @@ public class BezierView extends View implements MotionEventStream {
         final float yMod = y(mState);
         mPath.moveTo(mState.xCurrent, mState.yCurrent);
         final float controlPointX = mState.xCurrent + mState.distance * .66f;
-        final float controlPointY = mState.yCurrent + yMod/3;
+        final float controlPointY = mState.yCurrent + yMod / 3;
         mPath.quadTo(controlPointX, controlPointY, mState.xCurrent + xMod, mState.yCurrent + yMod);
 
         final float sweep = sweep(mState.xCurrent + xMod, mState.yCurrent + yMod,
@@ -196,12 +197,12 @@ public class BezierView extends View implements MotionEventStream {
                 mState.yCurrent - mScaledTouchSlop,
                 mState.xCurrent + mState.distance + mScaledTouchSlop,
                 mState.yCurrent + mScaledTouchSlop,
-                sweep/2,
+                sweep / 2,
                 -sweep,
                 false);
 
         final float controlPointXMirror = mState.xCurrent + mState.distance * .66f;
-        final float controlPointYMirror = mState.yCurrent - yMod/3;
+        final float controlPointYMirror = mState.yCurrent - yMod / 3;
         mPath.moveTo(mState.xCurrent, mState.yCurrent);
         mPath.quadTo(controlPointXMirror, controlPointYMirror, mState.xCurrent + xMod, mState.yCurrent - yMod);
     }

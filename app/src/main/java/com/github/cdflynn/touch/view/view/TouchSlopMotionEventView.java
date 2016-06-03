@@ -84,7 +84,7 @@ public class TouchSlopMotionEventView extends View implements MotionEventStream 
             return super.onTouchEvent(event);
         }
 
-        switch(event.getAction()) {
+        switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
                 mState.reset();
@@ -126,14 +126,14 @@ public class TouchSlopMotionEventView extends View implements MotionEventStream 
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (mLastDownX != TouchState.NONE && mLastDownY != TouchState.NONE) {
-            canvas.drawCircle(mLastDownX, mLastDownY, (mScaledTouchSlop + mAdditionalTouchSlop),mPaint);
+            canvas.drawCircle(mLastDownX, mLastDownY, (mScaledTouchSlop + mAdditionalTouchSlop), mPaint);
         }
     }
 
     private static float distance(float xDown, float yDown, float xCurrent, float yCurrent) {
         final float xAbs = Math.abs(xDown - xCurrent);
         final float yAbs = Math.abs(yDown - yCurrent);
-        return (float)Math.sqrt((yAbs*yAbs) + (xAbs * xAbs));
+        return (float) Math.sqrt((yAbs * yAbs) + (xAbs * xAbs));
     }
 
     private Paint createPaint() {

@@ -31,7 +31,7 @@ public class TouchState {
     public float distance = NONE;
 
     /**
-     * 
+     *
      */
     public void reset() {
         xDown = NONE;

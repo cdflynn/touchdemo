@@ -84,7 +84,7 @@ public class AnimatedBezierFragment extends BaseFragment {
             return ANIMATION_DURATION_MS_MAX;
         }
         final float progressPercentage = ((float) progress) / 100f;
-        return (int)(progressPercentage * (ANIMATION_DURATION_MS_MAX - ANIMATION_DURATION_MS_MIN)) + ANIMATION_DURATION_MS_MIN;
+        return (int) (progressPercentage * (ANIMATION_DURATION_MS_MAX - ANIMATION_DURATION_MS_MIN)) + ANIMATION_DURATION_MS_MIN;
     }
 
     /**

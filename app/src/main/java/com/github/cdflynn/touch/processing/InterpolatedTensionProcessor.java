@@ -87,32 +87,14 @@ public class InterpolatedTensionProcessor implements TouchProcessor {
 
         final float radiusSurplus = realDistance - mMinRadius;
         final float tensionZone = mMaxRadius - mMinRadius;
-        final float tensionZoneRequiredPullDistance = tensionZone * (mTensionFactor+1);
+        final float tensionZoneRequiredPullDistance = tensionZone * (mTensionFactor + 1);
 
         if (realDistance >= (tensionZoneRequiredPullDistance + mMinRadius)) {
             return mMaxRadius;
         }
 
-        final float realProgress = radiusSurplus/tensionZoneRequiredPullDistance;
+        final float realProgress = radiusSurplus / tensionZoneRequiredPullDistance;
         final float interpolatedProgress = mInterpolator.getInterpolation(realProgress);
         return mMinRadius + (interpolatedProgress * tensionZone);
-    }
-
-    private float interpolatedTension(float deltaX, float deltaY) {
-        float realRadius = (float) Math.sqrt(deltaX*deltaX + deltaY*deltaY);
-
-        if (realRadius < mMinRadius) {
-            return 1;
-        }
-
-        if (realRadius > mMaxRadius) {
-            return mTensionFactor;
-        }
-
-        final float radiusSurplus = realRadius - mMinRadius;
-        final float radiusSurplusPercentage = Math.min(1, radiusSurplus/ (mMaxRadius - mMinRadius));
-        final float tensionRange = 1-mTensionFactor;
-        final float interpolation = mInterpolator.getInterpolation(radiusSurplusPercentage);
-        return  1 - (interpolation * tensionRange);
     }
 }

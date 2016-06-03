@@ -53,7 +53,7 @@ public class TensionFragment extends BaseFragment {
     }
 
     private float progressToTension(@IntRange(from = 0, to = 100) int progress) {
-        return (TENSION_MAX - TENSION_MIN) * ((float)(progress)/100) + TENSION_MIN;
+        return (TENSION_MAX - TENSION_MIN) * ((float) (progress) / 100) + TENSION_MIN;
     }
 
     private final SeekBar.OnSeekBarChangeListener mSeekBarListener = new SeekBar.OnSeekBarChangeListener() {

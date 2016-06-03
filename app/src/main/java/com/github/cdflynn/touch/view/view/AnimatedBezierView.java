@@ -53,7 +53,7 @@ public class AnimatedBezierView extends BezierView implements MotionEventStream 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
-        switch(event.getAction()) {
+        switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
                 mLineToCenter.reset();
                 mLineToCenter.moveTo(mState.xCurrent, mState.yCurrent);
@@ -120,10 +120,11 @@ public class AnimatedBezierView extends BezierView implements MotionEventStream 
     /**
      * Given some path and its length, find the point ([x,y]) on that path at
      * the given percentage of length.  Store the result in {@code points}.
-     * @param path any path
-     * @param length the length of {@code path}
+     *
+     * @param path    any path
+     * @param length  the length of {@code path}
      * @param percent the percentage along the path's length to find a point
-     * @param points a float array of length 2, where the coordinates will be stored
+     * @param points  a float array of length 2, where the coordinates will be stored
      */
     private void setPointFromPercent(Path path, float length, float percent, float[] points) {
         mPathMeasure.setPath(path, false);

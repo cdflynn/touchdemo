@@ -124,15 +124,15 @@ public class InterpolatedTensionView extends AnimatedBezierView {
         }
 
         if (mRadiusMin == mRadiusMax) {
-            return (int) mArgbEvaluator.evaluate((s.distance/mRadiusMax), mNoTensionColor, mEndTensionColor);
+            return (int) mArgbEvaluator.evaluate((s.distance / mRadiusMax), mNoTensionColor, mEndTensionColor);
         }
 
         if (s.distance <= mRadiusMin) {
-            return (int) mArgbEvaluator.evaluate((s.distance/mRadiusMin), mNoTensionColor, mStartTensionColor);
+            return (int) mArgbEvaluator.evaluate((s.distance / mRadiusMin), mNoTensionColor, mStartTensionColor);
         }
 
-        final float fractionalDistance = (s.distance - mRadiusMin)/(mRadiusMax - mRadiusMin);
-        return (int)mArgbEvaluator.evaluate(fractionalDistance, mStartTensionColor, mEndTensionColor);
+        final float fractionalDistance = (s.distance - mRadiusMin) / (mRadiusMax - mRadiusMin);
+        return (int) mArgbEvaluator.evaluate(fractionalDistance, mStartTensionColor, mEndTensionColor);
 
     }
 }

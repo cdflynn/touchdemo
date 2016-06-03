@@ -12,8 +12,8 @@ import com.github.cdflynn.touch.R;
 import com.github.cdflynn.touch.view.fragment.AnimatedBezierFragment;
 import com.github.cdflynn.touch.view.fragment.BaseFragment;
 import com.github.cdflynn.touch.view.fragment.BezierFragment;
-import com.github.cdflynn.touch.view.fragment.NoisyFragment;
 import com.github.cdflynn.touch.view.fragment.InterpolatedTensionFragment;
+import com.github.cdflynn.touch.view.fragment.NoisyFragment;
 import com.github.cdflynn.touch.view.fragment.TensionFragment;
 import com.github.cdflynn.touch.view.fragment.TouchSlopFragment;
 
@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mCurrentFragmentId = savedInstanceState != null?
+        mCurrentFragmentId = savedInstanceState != null ?
                 savedInstanceState.getInt(SAVED_STATE_FRAGMENT)
                 : R.id.action_noisy;
         setContentView(R.layout.activity_main);
