@@ -20,6 +20,7 @@ public class ShuffleView extends FrameLayout {
     private static final float TENSION = 1.5f;
     private static final int RADIUS_MIN = 200;
     private static final int RADIUS_MAX = 350;
+    private static final float RADIUS_THRESHOLD = ((float)(RADIUS_MAX - RADIUS_MIN) * .75f) + RADIUS_MIN;
     private static final long ELEVATION_ANIMATION_DURATION = 200L;
     private static final int CARD_A = 1;
     private static final int CARD_B = 2;
