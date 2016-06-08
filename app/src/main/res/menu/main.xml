@@ -30,4 +30,9 @@
         android:id="@+id/action_interpolated_tension"
         android:title="@string/action_interpolated_tension"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_shuffle"
+        android:title="@string/action_shuffle"
+        app:showAsAction="never"/>
 </menu>

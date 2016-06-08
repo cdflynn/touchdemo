@@ -12,6 +12,7 @@ import android.view.ViewConfiguration;
 
 import com.github.cdflynn.touch.R;
 import com.github.cdflynn.touch.processing.OnTouchElevator;
+import com.github.cdflynn.touch.processing.TouchState;
 import com.github.cdflynn.touch.view.interfaces.MotionEventListener;
 import com.github.cdflynn.touch.view.interfaces.MotionEventStream;
 
@@ -20,20 +21,6 @@ import com.github.cdflynn.touch.view.interfaces.MotionEventStream;
  * {@link ViewConfiguration#getScaledTouchSlop()}.
  */
 public class TouchSlopMotionEventView extends View implements MotionEventStream {
-
-    /**
-     * Container for holding relevant details about any in-progress motion events.
-     */
-    private static class TouchState {
-        static final float NONE = -1f;
-        float xDown = NONE;
-        float yDown = NONE;
-
-        public void reset() {
-            xDown = NONE;
-            yDown = NONE;
-        }
-    }
 
     private float mLastDownX = TouchState.NONE;
     private float mLastDownY = TouchState.NONE;

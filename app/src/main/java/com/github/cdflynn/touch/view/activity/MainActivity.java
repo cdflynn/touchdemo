@@ -14,6 +14,7 @@ import com.github.cdflynn.touch.view.fragment.BaseFragment;
 import com.github.cdflynn.touch.view.fragment.BezierFragment;
 import com.github.cdflynn.touch.view.fragment.InterpolatedTensionFragment;
 import com.github.cdflynn.touch.view.fragment.NoisyFragment;
+import com.github.cdflynn.touch.view.fragment.ShuffleFragment;
 import com.github.cdflynn.touch.view.fragment.TensionFragment;
 import com.github.cdflynn.touch.view.fragment.TouchSlopFragment;
 
@@ -101,6 +102,8 @@ public class MainActivity extends AppCompatActivity {
                 return TensionFragment.newInstance();
             case R.id.action_interpolated_tension:
                 return InterpolatedTensionFragment.newInstance();
+            case R.id.action_shuffle:
+                return ShuffleFragment.newInstance();
             default:
                 return NoisyFragment.newInstance();
         }

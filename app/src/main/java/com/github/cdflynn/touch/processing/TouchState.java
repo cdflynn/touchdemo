@@ -13,18 +13,22 @@ public class TouchState {
      * The relative x coordinate where the motion event started.
      */
     public float xDown = NONE;
+    public float xDownRaw = NONE;
     /**
      * The relative y coordinate where the motion event started.
      */
     public float yDown = NONE;
+    public float yDownRaw = NONE;
     /**
      * The current x coordinate
      */
     public float xCurrent = NONE;
+    public float xCurrentRaw = NONE;
     /**
      * The current y coordinate
      */
     public float yCurrent = NONE;
+    public float yCurrentRaw = NONE;
     /**
      * The distance between the down and current coordinates.
      */
@@ -39,5 +43,20 @@ public class TouchState {
         xCurrent = NONE;
         yCurrent = NONE;
         distance = NONE;
+    }
+
+    @Override
+    public String toString() {
+        return "TouchState{" +
+                "xDown=" + xDown +
+                ", xDownRaw=" + xDownRaw +
+                ", yDown=" + yDown +
+                ", yDownRaw=" + yDownRaw +
+                ", xCurrent=" + xCurrent +
+                ", xCurrentRaw=" + xCurrentRaw +
+                ", yCurrent=" + yCurrent +
+                ", yCurrentRaw=" + yCurrentRaw +
+                ", distance=" + distance +
+                '}';
     }
 }

@@ -10,6 +10,7 @@
     <string name="action_animated_bezier">Animated Bezier</string>
     <string name="action_tension">Tension</string>
     <string name="action_interpolated_tension">Interpolated Tension</string>
+    <string name="action_shuffle">Shuffle</string>
 
     <string name="duration">Animation Duration: %1$dms</string>
     <string name="tension">Tension: %1$f</string>

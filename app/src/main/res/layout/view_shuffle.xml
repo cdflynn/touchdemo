@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- merge into frame layout -->
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <View
+        android:id="@+id/card_b"
+        android:translationX="@dimen/card_b_translation"
+        android:translationY="@dimen/card_b_translation"
+        android:layout_width="@dimen/card_size"
+        android:layout_height="@dimen/card_size"
+        android:layout_gravity="center"
+        android:background="@drawable/white_item_ripple"
+        android:clickable="true"/>
+
+    <View
+        android:id="@+id/card_a"
+        android:translationX="@dimen/card_a_translation"
+        android:translationY="@dimen/card_a_translation"
+        android:layout_width="@dimen/card_size"
+        android:layout_height="@dimen/card_size"
+        android:layout_gravity="center"
+        android:background="@drawable/white_item_ripple"
+        android:clickable="true"/>
+</merge>

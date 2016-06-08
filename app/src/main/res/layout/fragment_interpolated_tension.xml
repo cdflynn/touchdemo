@@ -17,7 +17,7 @@
         android:layout_weight="1"
         android:background="@drawable/white_item_ripple"
         android:clickable="true"
-        android:elevation="@dimen/elevation"
+        android:elevation="@dimen/elevation_small"
         android:outlineProvider="bounds"/>
 
     <TextView

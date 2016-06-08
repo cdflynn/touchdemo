@@ -9,6 +9,10 @@ public class TouchStateTracker implements TouchProcessor {
 
     private TouchState mState;
 
+    /**
+     * Create a new {@link TouchStateTracker} that will write state to the given
+     * {@code state} object.
+     */
     public TouchStateTracker(TouchState state) {
         mState = state;
     }
@@ -23,10 +27,14 @@ public class TouchStateTracker implements TouchProcessor {
             case MotionEvent.ACTION_DOWN:
                 mState.xDown = event.getX();
                 mState.yDown = event.getY();
+                mState.xDownRaw = event.getRawX();
+                mState.yDownRaw = event.getRawY();
                 break;
             case MotionEvent.ACTION_MOVE:
                 mState.xCurrent = event.getX();
                 mState.yCurrent = event.getY();
+                mState.xCurrentRaw = event.getRawX();
+                mState.yCurrentRaw = event.getRawY();
                 mState.distance = Geometry.distance(mState.xDown, mState.yDown, mState.xCurrent, mState.yCurrent);
                 break;
         }
