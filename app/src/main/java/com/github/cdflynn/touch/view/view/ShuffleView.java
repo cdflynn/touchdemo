@@ -17,8 +17,8 @@ import butterknife.Bind;
 
 public class ShuffleView extends FrameLayout {
 
-    private static final float TENSION = 1.5f;
-    private static final int RADIUS_MIN = 200;
+    private static final float TENSION = 1.1f;
+    private static final int RADIUS_MIN = 100;
     private static final int RADIUS_MAX = 350;
     private static final float RADIUS_THRESHOLD = ((float)(RADIUS_MAX - RADIUS_MIN) * .75f) + RADIUS_MIN;
     private static final long ELEVATION_ANIMATION_DURATION = 200L;
@@ -144,7 +144,7 @@ public class ShuffleView extends FrameLayout {
         final View currentCard = mCurrentCard == CARD_A ? mViews.cardA : mViews.cardB;
         final View otherCard = mCurrentCard == CARD_A ? mViews.cardB : mViews.cardA;
 
-        if (almostEqual(s.distance, RADIUS_MAX, .01f) && lastDistance < (RADIUS_MAX - .05f)) {
+        if (almostEqual(s.distance, RADIUS_MAX, .05f) && lastDistance < (RADIUS_MAX - .05f)) {
             didPassThreshold = true;
             if (mElevationMidToLow != null) {
                 mElevationMidToLow.cancel();
