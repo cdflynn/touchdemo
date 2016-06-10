@@ -3,9 +3,8 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
-
     defaultConfig {
-        applicationId "com.github.cdflynn.touch"
+        applicationId 'cdflynn.android.demo.touch'
         minSdkVersion 21
         targetSdkVersion 23
         versionCode 1
@@ -17,10 +16,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
     packagingOptions {
         // Needed for butterknife
         exclude 'META-INF/services/javax.annotation.processing.Processor'
+    }
+    productFlavors {
     }
 }
 
@@ -32,5 +32,4 @@ dependencies {
     compile 'com.android.support:design:23.4.0'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'io.apptik.widget:multislider:1.2'
-
 }

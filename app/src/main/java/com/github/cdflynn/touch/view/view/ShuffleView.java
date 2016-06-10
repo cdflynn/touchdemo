@@ -2,6 +2,9 @@ package com.github.cdflynn.touch.view.view;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -114,10 +117,10 @@ public class ShuffleView extends FrameLayout {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         if (changed) {
-            mRestingBoundary.set(mViews.cardA.getLeft(),
-                    mViews.cardA.getTop(),
-                    mViews.cardA.getRight(),
-                    mViews.cardA.getBottom());
+            mRestingBoundary.set(mViews.cardA.getLeft() + (int) mCardOffset,
+                    mViews.cardA.getTop() + (int) mCardOffset,
+                    mViews.cardA.getRight() + (int) mCardOffset,
+                    mViews.cardA.getBottom() + (int) mCardOffset);
         }
     }
 
@@ -130,9 +133,11 @@ public class ShuffleView extends FrameLayout {
             mDownInsideBounds = true;
         } else if (action == MotionEvent.ACTION_CANCEL
                 || action == MotionEvent.ACTION_UP) {
-            mDownInsideBounds = false;
-            settle();
+            if (mDownInsideBounds) {
+                settle();
+            }
             mState.reset();
+            mDownInsideBounds = false;
             return super.onInterceptTouchEvent(ev);
         }
 
