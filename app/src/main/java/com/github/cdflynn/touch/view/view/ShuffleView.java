@@ -18,12 +18,13 @@ import butterknife.Bind;
 public class ShuffleView extends FrameLayout {
 
     private static final float TENSION = 1.1f;
+    private static final float AFFORDANCE = .05f;
     private static final int RADIUS_MIN = 100;
     private static final int RADIUS_MAX = 350;
-    private static final float RADIUS_THRESHOLD = ((float)(RADIUS_MAX - RADIUS_MIN) * .75f) + RADIUS_MIN;
+    private static final long SETTLE_ANIMATION_DURATION = 200L;
     private static final long ELEVATION_ANIMATION_DURATION = 200L;
-    private static final int CARD_A = 1;
-    private static final int CARD_B = 2;
+    private static final int FLAG_CARD_A = 1;
+    private static final int FLAG_CARD_B = 2;
 
     static class Views extends BaseViews {
 
@@ -42,20 +43,36 @@ public class ShuffleView extends FrameLayout {
     private Views mViews;
     private TouchState mState;
     private InterpolatedTensionProcessor mTouchProcessor;
-    private Rect mRestingCoords;
+    /**
+     * The resting coordinates of the top card.
+     */
+    private Rect mRestingBoundary;
+    /**
+     * The absolute value amount that each card is shifted [x,y] so that they're not
+     * stacked right on top of each other.
+     */
     private float mCardOffset;
+    /**
+     * Extra touch tracking variable.  Remembers the last known drag distance.
+     */
+    private float mLastDistance = 0;
+    /**
+     * Has the current gesture ever passed the radius threshold to swap the cards?
+     */
+    private boolean mDidPassThreshold = false;
+    /**
+     * Was the last observed {@link MotionEvent#ACTION_DOWN} inside the top card's boundary?
+     */
     private boolean mDownInsideBounds = false;
-    private int mCurrentCard = CARD_A;
+    /**
+     * Flag to indicate which card is on top.
+     */
+    private int mTopCardFlag = FLAG_CARD_A;
     private float mXOffset;
     private float mYOffset;
     private float mElevationLow;
     private float mElevationMid;
     private float mElevationHigh;
-    private ValueAnimator mElevationMidToLow;
-    private ValueAnimator mElevationMidToHigh;
-    private ValueAnimator mElevationHighToMid;
-    private ValueAnimator mElevationLowToMid;
-    private ValueAnimator mElevationLowToHigh;
 
     public ShuffleView(Context context) {
         super(context);
@@ -84,7 +101,7 @@ public class ShuffleView extends FrameLayout {
         mTouchProcessor = new InterpolatedTensionProcessor(new TouchStateTracker(mState), mState);
         mTouchProcessor.setRadii(RADIUS_MIN, RADIUS_MAX);
         mTouchProcessor.setTension(TENSION);
-        mRestingCoords = new Rect();
+        mRestingBoundary = new Rect();
         mElevationLow = getResources().getDimension(R.dimen.elevation_small);
         mElevationMid = getResources().getDimension(R.dimen.elevation_medium);
         mElevationHigh = getResources().getDimension(R.dimen.elevation_large);
@@ -97,7 +114,7 @@ public class ShuffleView extends FrameLayout {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         if (changed) {
-            mRestingCoords.set(mViews.cardA.getLeft(),
+            mRestingBoundary.set(mViews.cardA.getLeft(),
                     mViews.cardA.getTop(),
                     mViews.cardA.getRight(),
                     mViews.cardA.getBottom());
@@ -107,10 +124,9 @@ public class ShuffleView extends FrameLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         final int action = ev.getAction();
-        if (action == MotionEvent.ACTION_DOWN
-                && insideRestingRect(ev)) {
-            mXOffset = ev.getX() - mRestingCoords.left;
-            mYOffset = ev.getY() - mRestingCoords.top;
+        if (action == MotionEvent.ACTION_DOWN && insideRestingRect(ev)) {
+            mXOffset = ev.getX() - mRestingBoundary.left;
+            mYOffset = ev.getY() - mRestingBoundary.top;
             mDownInsideBounds = true;
         } else if (action == MotionEvent.ACTION_CANCEL
                 || action == MotionEvent.ACTION_UP) {
@@ -125,9 +141,6 @@ public class ShuffleView extends FrameLayout {
         return super.onInterceptTouchEvent(ev);
     }
 
-    private float lastDistance = 0;
-    private boolean didPassThreshold = false;
-
     private void drawState(TouchState s) {
         if (!mDownInsideBounds) {
             return;
@@ -138,119 +151,120 @@ public class ShuffleView extends FrameLayout {
         if (toX == TouchState.NONE || toY == TouchState.NONE) {
             toX = s.xDown;
             toY = s.yDown;
-            didPassThreshold = false;
+            mDidPassThreshold = false;
         }
 
-        final View currentCard = mCurrentCard == CARD_A ? mViews.cardA : mViews.cardB;
-        final View otherCard = mCurrentCard == CARD_A ? mViews.cardB : mViews.cardA;
+        final View topCard = getTopCard();
+        final View bottomCard = getBottomCard();
 
-        if (almostEqual(s.distance, RADIUS_MAX, .05f) && lastDistance < (RADIUS_MAX - .05f)) {
-            didPassThreshold = true;
-            if (mElevationMidToLow != null) {
-                mElevationMidToLow.cancel();
-            }
-            if (mElevationLowToHigh != null) {
-                mElevationLowToHigh.cancel();
-            }
-            mElevationMidToLow = ValueAnimator.ofFloat(mViews.cardA.getZ(), mElevationLow);
-            mElevationMidToLow.setDuration(ELEVATION_ANIMATION_DURATION);
-            mElevationMidToLow.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        if (approximately(s.distance, RADIUS_MAX, AFFORDANCE)
+                && mLastDistance < (RADIUS_MAX - AFFORDANCE)) {
+            mDidPassThreshold = true;
+            // use some value animators instead of View.animate() so we don't
+            // conflict with the translation x/y View.animate() call on the top card.
+            ValueAnimator topAnimator = ValueAnimator.ofFloat(mViews.cardA.getZ(), mElevationLow)
+                    .setDuration(ELEVATION_ANIMATION_DURATION);
+            topAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
-                    currentCard.setZ((float) animation.getAnimatedValue());
+                    topCard.setZ((float) animation.getAnimatedValue());
                 }
             });
-            mElevationMidToLow.start();
+            topAnimator.start();
 
-            mElevationLowToHigh = ValueAnimator.ofFloat(mViews.cardB.getZ(), mElevationHigh);
-            mElevationLowToHigh.setDuration(ELEVATION_ANIMATION_DURATION);
-            mElevationLowToHigh.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            ValueAnimator bottomAnimator = ValueAnimator.ofFloat(mViews.cardB.getZ(), mElevationHigh)
+                    .setDuration(ELEVATION_ANIMATION_DURATION);
+            bottomAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
-                    otherCard.setZ((float) animation.getAnimatedValue());
+                    bottomCard.setZ((float) animation.getAnimatedValue());
                 }
             });
-            mElevationLowToHigh.start();
-            lastDistance = RADIUS_MAX;
-
+            bottomAnimator.start();
+            mLastDistance = RADIUS_MAX;
         } else {
-            lastDistance = s.distance;
+            mLastDistance = s.distance;
         }
 
-        currentCard.animate()
+        topCard.animate()
                 .x(toX - mXOffset)
                 .y(toY - mYOffset)
                 .setDuration(0)
                 .start();
     }
 
+    /**
+     * Move child views to their resting positions.
+     */
     private void settle() {
-        View currentCard = mCurrentCard == CARD_A ? mViews.cardA : mViews.cardB;
-        View otherCard = mCurrentCard == CARD_A ? mViews.cardB: mViews.cardA;
-        float currentCardRestingX;
-        float currentCardRestingY;
-        float currentCardRestingZ;
-        float otherCardRestingX;
-        float otherCardRestingY;
-        float otherCardRestingZ;
+        final View topCard = getTopCard();
+        final View bottomCard = getBottomCard();
+        float topCardRestingX;
+        float topCardRestingY;
+        float topCardRestingZ;
+        float bottomCardRestingX;
+        float bottomCardRestingY;
+        float bottomCardRestingZ;
 
-        if (didPassThreshold) {
-            currentCardRestingX = mRestingCoords.left - 2 * mCardOffset;
-            currentCardRestingY = mRestingCoords.top - 2 * mCardOffset;
-            currentCardRestingZ = mElevationLow;
-            otherCardRestingX = mRestingCoords.left;
-            otherCardRestingY = mRestingCoords.top;
-            otherCardRestingZ = mElevationMid;
+        if (mDidPassThreshold) {
+            topCardRestingX = mRestingBoundary.left - 2 * mCardOffset;
+            topCardRestingY = mRestingBoundary.top - 2 * mCardOffset;
+            topCardRestingZ = mElevationLow;
+            bottomCardRestingX = mRestingBoundary.left;
+            bottomCardRestingY = mRestingBoundary.top;
+            bottomCardRestingZ = mElevationMid;
         } else {
-            currentCardRestingX = mRestingCoords.left;
-            currentCardRestingY = mRestingCoords.top;
-            currentCardRestingZ = mElevationMid;
-            otherCardRestingX = mRestingCoords.left - 2 * mCardOffset;
-            otherCardRestingY = mRestingCoords.top - 2 * mCardOffset;
-            otherCardRestingZ = mElevationLow;
+            topCardRestingX = mRestingBoundary.left;
+            topCardRestingY = mRestingBoundary.top;
+            topCardRestingZ = mElevationMid;
+            bottomCardRestingX = mRestingBoundary.left - 2 * mCardOffset;
+            bottomCardRestingY = mRestingBoundary.top - 2 * mCardOffset;
+            bottomCardRestingZ = mElevationLow;
         }
 
-        currentCard.animate()
-                .x(currentCardRestingX)
-                .y(currentCardRestingY)
-                .z(currentCardRestingZ)
-                .setDuration(200)
+        topCard.animate()
+                .x(topCardRestingX)
+                .y(topCardRestingY)
+                .z(topCardRestingZ)
+                .setDuration(SETTLE_ANIMATION_DURATION)
                 .start();
 
-        otherCard.animate()
-                .x(otherCardRestingX)
-                .y(otherCardRestingY)
-                .z(otherCardRestingZ)
-                .setDuration(200)
+        bottomCard.animate()
+                .x(bottomCardRestingX)
+                .y(bottomCardRestingY)
+                .z(bottomCardRestingZ)
+                .setDuration(SETTLE_ANIMATION_DURATION)
                 .start();
-        if (didPassThreshold) {
-            mCurrentCard = mCurrentCard == CARD_A ? CARD_B : CARD_A;
+        if (mDidPassThreshold) {
+            mTopCardFlag = mTopCardFlag == FLAG_CARD_A ? FLAG_CARD_B : FLAG_CARD_A;
         }
     }
 
-    public boolean insideRestingRect(MotionEvent ev) {
+    private boolean insideRestingRect(MotionEvent ev) {
         final float x = ev.getX();
         final float y = ev.getY();
-        return mRestingCoords.contains((int)x, (int)y);
+        return mRestingBoundary.contains((int) x, (int) y);
     }
 
-    private void toggleElevation(View clicked) {
-        View other = clicked.getId() == mViews.cardB.getId() ? mViews.cardA
-                : mViews.cardB;
-        other.bringToFront();
-        mViews.root.invalidate();
-        clicked.animate()
-                .translationZ(mElevationLow)
-                .setDuration(250)
-                .start();
-        other.animate()
-                .translationZ(mElevationMid)
-                .setDuration(250)
-                .start();
+    /**
+     * Get whichever card is on top right now.
+     */
+    private View getTopCard() {
+        return mTopCardFlag == FLAG_CARD_A ? mViews.cardA : mViews.cardB;
     }
 
-    public static boolean almostEqual(float firstValue,float secondValue,float epsilon){
-        float difference = Math.abs(firstValue-secondValue);
-        return difference <= epsilon;
+    /**
+     * Get whichever card is on bottom right now.
+     */
+    private View getBottomCard() {
+        return mTopCardFlag == FLAG_CARD_A ? mViews.cardB : mViews.cardA;
+    }
+
+    /**
+     * Check if x and y are within affordance of each other.
+     */
+    private static boolean approximately(float x, float y, float affordance) {
+        float difference = Math.abs(x - y);
+        return difference <= affordance;
     }
 }
