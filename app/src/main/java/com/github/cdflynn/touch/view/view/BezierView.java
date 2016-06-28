@@ -100,7 +100,7 @@ public class BezierView extends View implements MotionEventStream {
                 }
                 break;
         }
-        calculatePath();
+        calculatePath(mState);
         invalidate();
         return super.onTouchEvent(event);
     }
@@ -177,34 +177,34 @@ public class BezierView extends View implements MotionEventStream {
     /**
      * Use the current touch state values to re-plot the path.
      */
-    protected final void calculatePath() {
+    protected final void calculatePath(TouchState s) {
         mPath.reset();
-        if (mState.yCurrent == TouchState.NONE || mState.xCurrent == TouchState.NONE || mState.distance == TouchState.NONE) {
+        if (s.yCurrent == TouchState.NONE || s.xCurrent == TouchState.NONE || s.distance == TouchState.NONE) {
             return;
         }
 
-        final float xMod = x(mState);
-        final float yMod = y(mState);
-        mPath.moveTo(mState.xCurrent, mState.yCurrent);
-        final float controlPointX = mState.xCurrent + mState.distance * .66f;
-        final float controlPointY = mState.yCurrent + yMod / 3;
-        mPath.quadTo(controlPointX, controlPointY, mState.xCurrent + xMod, mState.yCurrent + yMod);
+        final float xMod = x(s);
+        final float yMod = y(s);
+        mPath.moveTo(s.xCurrent, s.yCurrent);
+        final float controlPointX = s.xCurrent + s.distance * .66f;
+        final float controlPointY = s.yCurrent + yMod / 3;
+        mPath.quadTo(controlPointX, controlPointY, s.xCurrent + xMod, s.yCurrent + yMod);
 
-        final float sweep = sweep(mState.xCurrent + xMod, mState.yCurrent + yMod,
-                mState.xCurrent + xMod, mState.yCurrent - yMod);
+        final float sweep = sweep(s.xCurrent + xMod, s.yCurrent + yMod,
+                s.xCurrent + xMod, s.yCurrent - yMod);
 
-        mPath.arcTo(mState.xCurrent + mState.distance - mScaledTouchSlop,
-                mState.yCurrent - mScaledTouchSlop,
-                mState.xCurrent + mState.distance + mScaledTouchSlop,
-                mState.yCurrent + mScaledTouchSlop,
+        mPath.arcTo(s.xCurrent + s.distance - mScaledTouchSlop,
+                s.yCurrent - mScaledTouchSlop,
+                s.xCurrent + s.distance + mScaledTouchSlop,
+                s.yCurrent + mScaledTouchSlop,
                 sweep / 2,
                 -sweep,
                 false);
 
-        final float controlPointXMirror = mState.xCurrent + mState.distance * .66f;
-        final float controlPointYMirror = mState.yCurrent - yMod / 3;
-        mPath.moveTo(mState.xCurrent, mState.yCurrent);
-        mPath.quadTo(controlPointXMirror, controlPointYMirror, mState.xCurrent + xMod, mState.yCurrent - yMod);
+        final float controlPointXMirror = s.xCurrent + s.distance * .66f;
+        final float controlPointYMirror = s.yCurrent - yMod / 3;
+        mPath.moveTo(s.xCurrent, s.yCurrent);
+        mPath.quadTo(controlPointXMirror, controlPointYMirror, s.xCurrent + xMod, s.yCurrent - yMod);
     }
 
     private static final MotionEventListener NO_OP_LISTENER = new MotionEventListener() {
