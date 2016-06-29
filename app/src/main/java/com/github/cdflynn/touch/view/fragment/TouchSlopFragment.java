@@ -12,18 +12,18 @@ import android.widget.SeekBar;
 import com.github.cdflynn.touch.R;
 import com.github.cdflynn.touch.view.interfaces.MotionEventListener;
 import com.github.cdflynn.touch.view.view.MotionEventLogView;
-import com.github.cdflynn.touch.view.view.TouchSlopMotionEventView;
+import com.github.cdflynn.touch.view.view.TouchSlopView;
 
 public class TouchSlopFragment extends BaseFragment {
 
 
     private class Views {
-        TouchSlopMotionEventView touchTarget;
+        TouchSlopView touchTarget;
         MotionEventLogView log;
         AppCompatSeekBar seekBar;
 
         Views(View root) {
-            touchTarget = (TouchSlopMotionEventView) root.findViewById(R.id.touch_slop_target);
+            touchTarget = (TouchSlopView) root.findViewById(R.id.touch_slop_target);
             log = (MotionEventLogView) root.findViewById(R.id.touch_slop_log);
             seekBar = (AppCompatSeekBar) root.findViewById(R.id.touch_slop_seek_bar);
         }

@@ -20,7 +20,7 @@ import com.github.cdflynn.touch.view.interfaces.MotionEventStream;
  * A {@link MotionEventStream} that filters out motions events that fall within
  * {@link ViewConfiguration#getScaledTouchSlop()}.
  */
-public class TouchSlopMotionEventView extends View implements MotionEventStream {
+public class TouchSlopView extends View implements MotionEventStream {
 
     private float mLastDownX = TouchState.NONE;
     private float mLastDownY = TouchState.NONE;
@@ -31,22 +31,22 @@ public class TouchSlopMotionEventView extends View implements MotionEventStream 
     private int mScaledTouchSlop;
     private int mAdditionalTouchSlop;
 
-    public TouchSlopMotionEventView(Context context) {
+    public TouchSlopView(Context context) {
         super(context);
         init(context);
     }
 
-    public TouchSlopMotionEventView(Context context, AttributeSet attrs) {
+    public TouchSlopView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public TouchSlopMotionEventView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public TouchSlopView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }
 
-    public TouchSlopMotionEventView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public TouchSlopView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init(context);
     }
