@@ -13,6 +13,8 @@
     <color name="selection_ripple">#a5c5ccf5</color>
     <color name="ghost">#0b000000</color>
     <color name="activity_background">#e6e5e5</color>
+    <color name="anchor">#e5000000</color>
+    <color name="transparent">@android:color/transparent</color>
 
 
     <color name="shadow">#c9383838</color>

@@ -49,6 +49,7 @@ public class SettleAnimator implements TouchStateAnimator {
         final float yTo = s.yDown;
         final float[] points = new float[2];
         final float fromDistance = s.distance;
+        // ...
         mAnimator = ValueAnimator.ofFloat(1f, 0f);
         mAnimator.setInterpolator(mInterpolator);
         mAnimator.setDuration(mAnimationDuration)

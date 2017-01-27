@@ -24,8 +24,8 @@ public class BezierView extends View implements MotionEventStream {
 
     private static final int ADD_RADIUS = 100;
 
-    private float mLastDownX = TouchState.NONE;
-    private float mLastDownY = TouchState.NONE;
+    protected float mLastDownX = TouchState.NONE;
+    protected float mLastDownY = TouchState.NONE;
     private MotionEventListener mListener = NO_OP_LISTENER;
     private OnTouchElevator mOnTouchElevator;
     private Paint mPaint;
@@ -116,8 +116,7 @@ public class BezierView extends View implements MotionEventStream {
         }
 
         canvas.save();
-        canvas.rotate(angle(mState),
-                mState.xCurrent, mState.yCurrent);
+        canvas.rotate(angle(mState), mState.xCurrent, mState.yCurrent);
         canvas.drawPath(mPath, mPaint);
         canvas.restore();
     }
@@ -182,7 +181,7 @@ public class BezierView extends View implements MotionEventStream {
         if (s.yCurrent == TouchState.NONE || s.xCurrent == TouchState.NONE || s.distance == TouchState.NONE) {
             return;
         }
-
+        /* center around down point */
         final float xMod = x(s);
         final float yMod = y(s);
         mPath.moveTo(s.xCurrent, s.yCurrent);

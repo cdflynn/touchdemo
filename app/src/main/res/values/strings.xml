@@ -7,6 +7,7 @@
     <string name="action_noisy">Noisy</string>
     <string name="action_touch_slop">Touch Slop</string>
     <string name="action_bezier">Bezier</string>
+    <string name="action_reorder">Reorder</string>
     <string name="action_animated_bezier">Animated Bezier</string>
     <string name="action_tension">Tension</string>
     <string name="action_interpolated_tension">Interpolated Tension</string>

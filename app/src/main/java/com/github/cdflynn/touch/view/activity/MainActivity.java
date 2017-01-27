@@ -14,6 +14,7 @@ import com.github.cdflynn.touch.view.fragment.BaseFragment;
 import com.github.cdflynn.touch.view.fragment.BezierFragment;
 import com.github.cdflynn.touch.view.fragment.InterpolatedTensionFragment;
 import com.github.cdflynn.touch.view.fragment.NoisyFragment;
+import com.github.cdflynn.touch.view.fragment.ReorderFragment;
 import com.github.cdflynn.touch.view.fragment.ShuffleFragment;
 import com.github.cdflynn.touch.view.fragment.TensionFragment;
 import com.github.cdflynn.touch.view.fragment.TouchSlopFragment;
@@ -96,6 +97,8 @@ public class MainActivity extends AppCompatActivity {
                 return TouchSlopFragment.newInstance();
             case R.id.action_bezier:
                 return BezierFragment.newInstance();
+            case R.id.action_reorder:
+                return ReorderFragment.newInstance();
             case R.id.action_animated_bezier:
                 return AnimatedBezierFragment.newInstance();
             case R.id.action_tension:

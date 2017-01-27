@@ -15,6 +15,7 @@ import com.github.cdflynn.touch.R;
 import com.github.cdflynn.touch.processing.InterpolatedTensionProcessor;
 import com.github.cdflynn.touch.processing.TouchState;
 import com.github.cdflynn.touch.processing.TouchStateTracker;
+import com.github.cdflynn.touch.util.Geometry;
 
 import butterknife.Bind;
 
@@ -162,7 +163,7 @@ public class ShuffleView extends FrameLayout {
         final View topCard = getTopCard();
         final View bottomCard = getBottomCard();
 
-        if (approximately(s.distance, RADIUS_MAX, AFFORDANCE)
+        if (Geometry.approximately(s.distance, RADIUS_MAX, AFFORDANCE)
                 && mLastDistance < (RADIUS_MAX - AFFORDANCE)) {
             mDidPassThreshold = true;
             // use some value animators instead of View.animate() so we don't
@@ -263,13 +264,5 @@ public class ShuffleView extends FrameLayout {
      */
     private View getBottomCard() {
         return mTopCardFlag == FLAG_CARD_A ? mViews.cardB : mViews.cardA;
-    }
-
-    /**
-     * Check if x and y are within affordance of each other.
-     */
-    private static boolean approximately(float x, float y, float affordance) {
-        float difference = Math.abs(x - y);
-        return difference <= affordance;
     }
 }
