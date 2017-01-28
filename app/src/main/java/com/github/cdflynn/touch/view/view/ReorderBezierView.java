@@ -126,7 +126,7 @@ public class ReorderBezierView extends BezierView implements TouchStateView {
         public void onAnimationUpdate(ValueAnimator animation) {
             final float fraction = animation.getAnimatedFraction();
             mAnchorRadius = ANCHOR_SIZE_MIN + ((ANCHOR_SIZE_MAX - ANCHOR_SIZE_MIN) * fraction);
-            final int color = (int)mArgbEvaluator.evaluate(fraction, mAnchorColorStart, mAnchorColorEnd);
+            final int color = (int) mArgbEvaluator.evaluate(fraction, mAnchorColorStart, mAnchorColorEnd);
             mPaint.setColor(color);
             invalidate();
         }

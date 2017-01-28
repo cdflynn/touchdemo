@@ -6,7 +6,6 @@ import android.animation.ValueAnimator;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;

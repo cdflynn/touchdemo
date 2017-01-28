@@ -7,7 +7,10 @@ import android.view.animation.Interpolator;
  */
 public interface TouchStateAnimator {
     void cancel();
+
     void setDuration(long durationMs);
+
     void setInterpolator(Interpolator i);
+
     void start(TouchState s, TouchStateView outlet);
 }

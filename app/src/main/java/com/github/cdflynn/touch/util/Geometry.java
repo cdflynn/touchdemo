@@ -21,7 +21,6 @@ public class Geometry {
         return difference <= affordance;
     }
 
-
     /**
      * Given some path and its length, find the point ([x,y]) on that path at
      * the given percentage of length.  Store the result in {@code points}.

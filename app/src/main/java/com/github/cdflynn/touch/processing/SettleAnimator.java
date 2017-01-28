@@ -8,6 +8,8 @@ import android.graphics.PathMeasure;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Interpolator;
 
+import com.github.cdflynn.touch.util.Geometry;
+
 public class SettleAnimator implements TouchStateAnimator {
 
     private static final long DEFAULT_DURATION = 300L;
@@ -64,7 +66,7 @@ public class SettleAnimator implements TouchStateAnimator {
                         s.yDown = yTo;
                         final float fraction = animation.getAnimatedFraction();
                         s.distance = (1 - fraction) * fromDistance;
-                        setPointFromPercent(mLineToCenter, fromDistance, fraction, points);
+                        Geometry.setPointFromPercent(mLineToCenter, fromDistance, fraction, points);
                         s.xCurrent = points[0];
                         s.yCurrent = points[1];
                         view.drawTouchState(s);
@@ -89,20 +91,4 @@ public class SettleAnimator implements TouchStateAnimator {
         });
         mAnimator.start();
     }
-
-
-    /**
-     * Given some path and its length, find the point ([x,y]) on that path at
-     * the given percentage of length.  Store the result in {@code points}.
-     *
-     * @param path    any path
-     * @param length  the length of {@code path}
-     * @param percent the percentage along the path's length to find a point
-     * @param points  a float array of length 2, where the coordinates will be stored
-     */
-    private void setPointFromPercent(Path path, float length, float percent, float[] points) {
-        mPathMeasure.setPath(path, false);
-        mPathMeasure.getPosTan(length * percent, points, null);
-    }
-
 }
