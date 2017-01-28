@@ -123,7 +123,7 @@ public class DragTouchStateProcessor implements TouchProcessor {
             } else {
                 mTouchState.xCurrent = mTouchState.xDown;
                 mTouchState.yCurrent = mTouchState.yDown;
-                mTouchState.distance = 1;
+                mTouchState.distance = 0;
             }
             mTouchStateView.drawTouchState(mTouchState);
         }

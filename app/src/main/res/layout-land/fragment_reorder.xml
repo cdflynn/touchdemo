@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/activity_background"
+    android:padding="30dp"
+    android:clipToPadding="false"
+    tools:context=".view.activity.MainActivity"
+    tools:showIn="@layout/activity_main">
+
+    <com.github.cdflynn.touch.view.view.MotionEventLogView
+        android:id="@+id/reorder_log"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:padding="6dp"/>
+
+    <com.github.cdflynn.touch.view.view.ReorderBezierView
+        android:id="@+id/reorder_touch_target"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/white_item_ripple"
+        android:clickable="true"
+        android:elevation="@dimen/elevation_small"
+        android:outlineProvider="bounds"/>
+
+</FrameLayout>

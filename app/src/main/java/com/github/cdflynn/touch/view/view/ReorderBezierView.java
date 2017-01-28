@@ -83,13 +83,20 @@ public class ReorderBezierView extends BezierView implements TouchStateView {
         if (changed) {
             final int height = bottom - top;
             final int width = right - left;
+            final boolean landscape = getResources().getBoolean(R.bool.is_landscape);
+            if (landscape) {
+                a1.x = width / 4;
+                a1.y = height / 2;
 
-            a1.x = width / 2;
-            a1.y = height / 4;
+                a2.x = (width / 4) * 3;
+                a2.y = height / 2;
+            } else {
+                a1.x = width / 2;
+                a1.y = height / 4;
 
-            a2.x = width / 2;
-            a2.y = (height / 4) * 3;
-
+                a2.x = width / 2;
+                a2.y = (height / 4) * 3;
+            }
             mDragProcessor.anchors(a1, a2);
             startAnchorAnimation();
         }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/activity_background"
+              android:orientation="horizontal"
+              android:padding="30dp">
+
+    <com.github.cdflynn.touch.view.view.NoisyMotionEventView
+        android:id="@+id/touch_target"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/white_item_ripple"
+        android:clickable="true"
+        android:elevation="@dimen/elevation_small"
+        android:outlineProvider="bounds"/>
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <com.github.cdflynn.touch.view.view.MotionEventLogView
+            android:id="@+id/log"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="6dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:background="@drawable/alpha_gradient"/>
+    </FrameLayout>
+
+</LinearLayout>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/activity_background">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingTop="30dp"
+        android:paddingRight="30dp"
+        android:paddingLeft="30dp"
+        android:layout_marginBottom="50dp">
+
+        <com.github.cdflynn.touch.view.view.MotionEventLogView
+            android:id="@+id/touch_slop_log"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:layout_alignParentBottom="true"
+            android:padding="6dp"/>
+
+        <com.github.cdflynn.touch.view.view.TouchSlopView
+            android:id="@+id/touch_slop_target"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/white_item_ripple"
+            android:clickable="true"
+            android:elevation="@dimen/elevation_small"
+            android:outlineProvider="bounds"/>
+    </RelativeLayout>
+
+    <android.support.v7.widget.AppCompatSeekBar
+        android:id="@+id/touch_slop_seek_bar"
+        android:layout_width="match_parent"
+        android:layout_gravity="bottom"
+        android:layout_height="40dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="10dp"/>
+
+</FrameLayout>
