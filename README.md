@@ -1,5 +1,7 @@
 # Custom touch handling in Android
 
+Read [the Article](https://medium.com/livefront/the-language-of-motion-a22a902bbcab)
+
 ![All Together Now](https://github.com/cdflynn/touchdemo/blob/develop/app/media/td_sh.gif?raw=true)
 
 A collection of concepts and techniques for implementing believable touch interactions.
